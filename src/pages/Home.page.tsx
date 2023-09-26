@@ -6,14 +6,12 @@ import {
   NavbarItem,
   Chip,
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
 } from '@nextui-org/react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Document, Priority } from '../../types';
+import DocumentCard from '@/components/Document/Document.Card';
+import { CreateDocumentModal } from '@/components/Document/Document.Create';
 
 type ToolbarItem = {
   label: string;
@@ -23,6 +21,10 @@ type ToolbarItem = {
 
 const HomePage = () => {
   const [showCreateDocumentModal, setShowCreateDocumentModal] = useState(false);
+
+  const [documents, setDocuments] = useState<Array<Document>>([
+    { id: '0', title: 'Riadh Adrani', priority: Priority.low },
+  ]);
 
   const toolbarItems = useMemo<Array<ToolbarItem>>(() => {
     return [
@@ -61,25 +63,19 @@ const HomePage = () => {
         </NavbarContent>
       </Navbar>
       <Modal isOpen={showCreateDocumentModal} onOpenChange={setShowCreateDocumentModal}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>Create Document</ModalHeader>
-              <ModalBody>
-                <Input placeholder="Document title" />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="primary" variant="flat" onClick={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onClick={onClose}>
-                  Create
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <CreateDocumentModal
+          onCreate={(doc) =>
+            setDocuments((items) => [...items, { ...doc, id: items.length.toString() }])
+          }
+        />
       </Modal>
+      <div className="col-center m-y-5">
+        <div className="p-10px flex-1 gap-5 grid grid-cols-3">
+          {documents.map((doc) => (
+            <DocumentCard document={doc} />
+          ))}
+        </div>
+      </div>
     </>
   );
 };
