@@ -12,4 +12,5 @@ export interface Base {
 export interface Document extends Base {
   title: string;
   priority: Priority;
+  shortDescription?: string;
 }
