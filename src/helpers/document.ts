@@ -17,5 +17,5 @@ export const getPriorityData = (priority: Priority) => {
 };
 
 export const usePriorty = (priority: Priority) => {
-  return useMemo(() => getPriorityData(priority), [priority]);
+  return useMemo(() => getPriorityData(priority), []);
 };

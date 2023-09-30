@@ -1,11 +1,12 @@
-import { PropsWithChildren, createContext, useState } from 'react';
-import { Document } from '../../types';
+import { PropsWithChildren, createContext, useEffect, useState } from 'react';
+import { fetchEvent, onEvent, sendEvent } from '@/helpers/utils';
+import { Events, CreateDocumentBody, Document, UpdateDocumentBody } from '../../types/index';
 
 export interface DataContext {
   documents: Array<Document>;
-  createDocument: (body: Pick<Document, 'priority' | 'title'>) => void;
+  createDocument: (body: CreateDocumentBody) => void;
   deleteDocument: (id: string) => void;
-  updateDocument: (body: Partial<Pick<Document, 'priority' | 'title'>>) => void;
+  updateDocument: (body: UpdateDocumentBody) => Promise<Document>;
   getDocument: (id: string) => Document | undefined;
 }
 
@@ -14,7 +15,7 @@ export const DataContext = createContext<DataContext>({
   createDocument: () => 0,
   deleteDocument: () => 0,
   getDocument: () => undefined,
-  updateDocument: () => 0,
+  updateDocument: async () => ({} as unknown as Document),
 });
 
 export const DataProvider = (props: PropsWithChildren) => {
@@ -23,22 +24,46 @@ export const DataProvider = (props: PropsWithChildren) => {
   const createDocument: DataContext['createDocument'] = (body) => {
     if (!body.title) return;
 
-    setDocuments((state) => {
-      const newDoc: Document = { ...body, id: state.length.toString() };
-
-      return [...state, newDoc];
-    });
+    fetchEvent<CreateDocumentBody, Document>(Events.createDocument, body)
+      .then((it) => {
+        setDocuments((state) => [...state, it.data]);
+      })
+      .catch(() => {
+        // TODO: send notification
+      });
   };
 
   const deleteDocument: DataContext['deleteDocument'] = (id) => {
-    setDocuments((state) => state.filter((it) => it.id !== id));
+    fetchEvent<string>(Events.deleteDocument, id)
+      .then(() => {
+        setDocuments((state) => state.filter((it) => it.id !== id));
+      })
+      .catch(() => {
+        // TODO: send notification
+      });
   };
 
   const getDocument: DataContext['getDocument'] = (id) => {
     return documents.find((it) => it.id === id);
   };
 
-  const updateDocument: DataContext['updateDocument'] = () => {};
+  const updateDocument: DataContext['updateDocument'] = async (body) => {
+    return fetchEvent<UpdateDocumentBody, Document>(Events.updateDocument, body).then((res) => {
+      setDocuments((state) => state.map((it) => (it.id === body.id ? res.data : it)));
+
+      return res.data;
+    });
+  };
+
+  // fetch for the first time
+  useEffect(() => {
+    // register all related events
+    fetchEvent<undefined, Array<Document>>(Events.getDocuments, undefined).then((it) => {
+      const { data } = it;
+
+      setDocuments(data);
+    });
+  }, []);
 
   return (
     <DataContext.Provider

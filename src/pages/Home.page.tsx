@@ -15,8 +15,8 @@ const HomePage = () => {
       <Modal isOpen={showCreateDocumentModal} onOpenChange={setShowCreateDocumentModal}>
         <CreateDocumentModal onCreate={(body) => createDocument(body)} />
       </Modal>
-      <div className="col m-y-5">
-        <div className="p-5px flex-1 gap-5 grid grid-cols-3">
+      <div className="col">
+        <div className="p-5px flex-1 gap-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <DocumentCreateCard onClick={() => setShowCreateDocumentModal(true)} />
           {documents.map((doc) => (
             <DocumentCard key={doc.id} document={doc} />

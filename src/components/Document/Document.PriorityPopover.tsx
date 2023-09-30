@@ -5,29 +5,30 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
+  Tooltip,
 } from '@nextui-org/react';
 import { Priority } from '../../../types';
-import { useCallback } from 'react';
-import { usePriorty } from '@/helpers/document';
+import { getPriorityData } from '@/helpers/document';
+import Icon from '../Icon/Icon';
+
+const Option = (opts: { priority: Priority; onClick: (v: Priority) => void }) => {
+  const priority = getPriorityData(opts.priority);
+
+  return (
+    <Button
+      color={priority.color as 'primary'}
+      variant="flat"
+      className="w-full"
+      onClick={() => opts.onClick(opts.priority)}
+    >
+      <Icon icon={priority.icon as `i-mdi-`} />
+      {opts.priority}
+    </Button>
+  );
+};
 
 const PriorityPopover = (props: { priority: Priority; onChanged: (value: Priority) => void }) => {
-  const Option = useCallback((opts: { priority: Priority }) => {
-    const priority = usePriorty(opts.priority);
-
-    return (
-      <Button
-        color={priority.color as 'primary'}
-        variant="flat"
-        className="w-full"
-        onClick={() => props.onChanged(opts.priority)}
-      >
-        <i className={priority.icon} />
-        {opts.priority}
-      </Button>
-    );
-  }, []);
-
-  const { color, icon } = usePriorty(props.priority);
+  const { color, icon } = getPriorityData(props.priority);
 
   return (
     <>
@@ -39,13 +40,16 @@ const PriorityPopover = (props: { priority: Priority; onChanged: (value: Priorit
           </Button>
         </DropdownTrigger>
         <DropdownMenu>
-          <DropdownSection>
+          <DropdownSection
+            title={'Choose Priority'}
+            classNames={{ divider: 'hidden', base: 'col' }}
+          >
             {Object.values(Priority)
               .filter((it) => it !== props.priority)
               .map((it) => (
-                <DropdownItem key={it}>
+                <DropdownItem key={it} className="m-t-1 p-y-0">
                   <div className="w-full">
-                    <Option priority={it} />
+                    <Option priority={it} onClick={props.onChanged} />
                   </div>
                 </DropdownItem>
               ))}

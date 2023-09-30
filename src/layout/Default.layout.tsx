@@ -7,7 +7,7 @@ const DefaultLayout = () => {
     <DataProvider>
       <TopBar />
       <div
-        className="w-1200px col m-x-auto justify-stretch"
+        className=" col p-5 w-full xl:w-1280px lg:m-x-auto"
         style={{ minHeight: 'calc(100vh - 65px)' }}
       >
         <Outlet />

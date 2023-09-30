@@ -3,6 +3,7 @@ import { release } from 'node:os';
 import { join } from 'node:path';
 import { update } from './update';
 import { start } from '../../backend/server';
+import '../store/store';
 
 // The built directory structure
 //
@@ -37,6 +38,9 @@ if (!app.requestSingleInstanceLock()) {
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 let win: BrowserWindow | null = null;
+
+export const useWin = () => win;
+
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js');
 const url = process.env.VITE_DEV_SERVER_URL;
@@ -46,6 +50,8 @@ async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
     icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
+    minHeight: 720,
+    minWidth: 1280,
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production

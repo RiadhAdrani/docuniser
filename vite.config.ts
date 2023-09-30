@@ -18,6 +18,7 @@ export default defineConfig(({ command }) => {
   return {
     resolve: {
       alias: {
+        '@ts': path.join(__dirname, '/types'),
         '@': path.join(__dirname, 'src'),
       },
     },
