@@ -19,3 +19,9 @@ export const getPriorityData = (priority: Priority) => {
 export const usePriorty = (priority: Priority) => {
   return useMemo(() => getPriorityData(priority), []);
 };
+
+export const sortPriority = (p1: Priority, p2: Priority): number => {
+  const array = Object.values(Priority);
+
+  return array.indexOf(p1) - array.indexOf(p2);
+};

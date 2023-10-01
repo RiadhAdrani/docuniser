@@ -1,25 +1,23 @@
 import PriorityPopover from '@/components/Document/Document.PriorityPopover';
 import { DataContext } from '@/context/Data.context';
-import { Button, Divider, Input, Navbar, NavbarBrand, Textarea, Tooltip } from '@nextui-org/react';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { Button, Divider, Input, Textarea, Tooltip } from '@nextui-org/react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchEvent } from '@/helpers/utils';
-import { Events, Document, UpdateDocumentBody } from '../../types';
+import { Events, Document, UpdateDocumentBody, CreateDocumentBody } from '../../types';
 import { useDebounce } from 'usehooks-ts';
 import Icon from '@/components/Icon/Icon';
+import DocumentList from '@/components/Document/Document.List';
 
 const DocumentPage = () => {
   const { updateDocument } = useContext(DataContext);
-
   const [search] = useSearchParams();
-
   const id = useMemo(() => search.get('id'), [search.get('id')]);
 
   const [state, setState] = useState<'done' | 'loading' | 'error'>('loading');
-
   const [document, setDocument] = useState<Document | undefined>(undefined);
-
   const [queue, setQueue] = useState<Omit<UpdateDocumentBody, 'id'>>({});
+  const [children, setChildren] = useState<Array<Document>>([]);
 
   const debouncedQueue = useDebounce(queue, 1000);
 
@@ -30,10 +28,36 @@ const DocumentPage = () => {
     setQueue({ [key]: value });
   };
 
+  const createChild = useCallback(
+    (body: CreateDocumentBody) => {
+      if (!id) return;
+
+      fetchEvent<CreateDocumentBody, Document>(Events.createDocument, { ...body, parent: id })
+        .then((it) => {
+          setChildren((state) => [...state, it.data]);
+        })
+        .catch(() => {});
+    },
+    [id]
+  );
+
+  const deleteChild = useCallback(
+    (id: string) => {
+      fetchEvent<string, void>(Events.createDocument, id)
+        .then(() => {
+          setChildren((state) => state.filter((it) => it.id !== id));
+        })
+        .catch(() => {});
+    },
+    [id]
+  );
+
   useEffect(() => {
+    if (!id) return;
+
     setState('loading');
 
-    fetchEvent<string, Document>(Events.getDocument, `${id}`)
+    fetchEvent<string, Document>(Events.getDocument, id)
       .then((res) => {
         const { data } = res;
 
@@ -41,6 +65,16 @@ const DocumentPage = () => {
         setState('done');
       })
       .catch(() => setState('error'));
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    fetchEvent<string, Array<Document>>(Events.getDocumentChildren, id).then((res) => {
+      const { data } = res;
+
+      setChildren(data);
+    });
   }, [id]);
 
   useEffect(() => {
@@ -59,7 +93,11 @@ const DocumentPage = () => {
       .catch(() => {
         // TODO: display notification
       });
-  }, [debouncedQueue]);
+  }, [debouncedQueue, id]);
+
+  useEffect(() => {
+    setQueue({});
+  }, [id]);
 
   return (
     <div className="col p-2 p-y-5 flex-1 overflow-y-hidden">
@@ -83,7 +121,7 @@ const DocumentPage = () => {
                   value={document.title}
                   classNames={{ input: 'text-1.5em font-bold placeholder:font-500 ' }}
                   onInput={(e) => update(e.currentTarget.value, 'title')}
-                  description="Document title"
+                  description={document.id}
                 />
                 <div className="row-center gap-1">
                   <PriorityPopover
@@ -105,18 +143,21 @@ const DocumentPage = () => {
               </div>
               <div>
                 <Textarea
-                  placeholder="Organizing ideas for my project..."
+                  placeholder="Document short description"
                   maxLength={1000}
                   minRows={5}
                   maxRows={10}
-                  description="Describe the documents in a short paragraph"
+                  description={`${document.shortDescription?.length}/1000`}
                   value={document.shortDescription}
+                  onInput={(e) => update(e.currentTarget.value, 'shortDescription')}
                 />
               </div>
               <Divider />
-              <div className="flex-1 overflow-y-hidden">
-                <div className="h-1000px"></div>
-              </div>
+              <DocumentList
+                initial={children}
+                onCreated={(body) => createChild(body)}
+                onDeleted={(id) => deleteChild(id)}
+              />
             </div>
           </>
         )

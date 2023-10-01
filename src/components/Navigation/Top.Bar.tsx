@@ -1,13 +1,4 @@
-import {
-  Button,
-  Chip,
-  Input,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Tooltip,
-} from '@nextui-org/react';
+import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem, Tooltip } from '@nextui-org/react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -63,7 +54,7 @@ const TopBar = () => {
         </NavbarBrand>
         <NavbarContent justify="center">
           <NavbarItem>
-            <Input placeholder="Search documents..." variant="flat" />
+            <h1>Docuniser</h1>
           </NavbarItem>
         </NavbarContent>
         <NavbarContent justify="end" className="gap-1">

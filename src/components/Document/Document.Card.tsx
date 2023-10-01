@@ -8,19 +8,18 @@ import {
   Modal,
   Tooltip,
 } from '@nextui-org/react';
-import { PropsWithChildren, useContext, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { Document } from '../../../types';
 import { Link } from 'react-router-dom';
 import DocumentCardEmptyDescription from './Document.Card.EmptyDescription';
 import DocumentPriorityChip from './Document.PriorityChip';
 import DeleteDocumentModal from './Document.Delete.Modal';
-import { DataContext } from '@/context/Data.context';
 import Icon from '../Icon/Icon';
 import { timeAgo } from '@/helpers/time';
 
-const DocumentCard = (props: PropsWithChildren<{ document: Document }>) => {
-  const { deleteDocument } = useContext(DataContext);
-
+const DocumentCard = (
+  props: PropsWithChildren<{ document: Document; onDelete: (id: string) => void }>
+) => {
   const { document } = props;
 
   const [showDelete, setShowDelete] = useState(false);
@@ -44,7 +43,15 @@ const DocumentCard = (props: PropsWithChildren<{ document: Document }>) => {
           </CardHeader>
           <Divider />
           <CardBody className="overflow-hidden text-ellipsis">
-            {document.shortDescription ? '' : <DocumentCardEmptyDescription />}
+            {document.shortDescription ? (
+              <>
+                <p className="text-0.85em text-zinc-500 overflow-hidden text-ellipsis line-clamp-3">
+                  {document.shortDescription}
+                </p>
+              </>
+            ) : (
+              <DocumentCardEmptyDescription />
+            )}
           </CardBody>
           <Divider />
           <CardFooter
@@ -82,7 +89,7 @@ const DocumentCard = (props: PropsWithChildren<{ document: Document }>) => {
         </Card>
       </Link>
       <Modal isOpen={showDelete} onOpenChange={setShowDelete}>
-        <DeleteDocumentModal onConfirm={() => deleteDocument(document.id)} />
+        <DeleteDocumentModal onConfirm={() => props.onDelete(document.id)} />
       </Modal>
     </>
   );

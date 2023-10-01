@@ -22,6 +22,7 @@
     "@riadh-adrani/math-utils": "^1.0.2",
     "@riadh-adrani/obj-utils": "^1.0.2",
     "@riadh-adrani/str-utils": "^1.0.3",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "dayjs": "^1.11.10",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.1.1",

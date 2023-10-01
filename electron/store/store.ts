@@ -1,16 +1,9 @@
 import ElectronStore from 'electron-store';
-import { useWin } from '../main/index';
-import { ipcMain } from 'electron';
-import {
-  Events,
-  CreateDocumentBody,
-  Document,
-  StoreResponse,
-  UpdateDocumentBody,
-} from '../../types/index';
+import { Events, CreateDocumentBody, Document, UpdateDocumentBody } from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
 import { hasProperty } from '@riadh-adrani/obj-utils';
+import { on } from './utils';
 
 const store = new ElectronStore<{ documents: Record<string, Document> }>({
   schema: {
@@ -69,33 +62,6 @@ export const createId = (): string => {
   return `${random(0, 1000)}-${random(0, 1000)}-${Date.now()}`;
 };
 
-type EventCallback<B = unknown, R = unknown> = (body: B) => R;
-
-const on: <B = unknown, R = unknown>(event: Events, callback: EventCallback<B, R>) => void = (
-  event,
-  callback
-) => {
-  ipcMain.on(event, (_, body) => {
-    log(`received event "${event}"`);
-
-    let response: StoreResponse = { data: undefined };
-
-    try {
-      const data = callback(body);
-
-      response.data = data as unknown;
-      log(`processed event "${event}" successfully`);
-    } catch (error) {
-      log(`error processing event "${event}"`);
-      log(`body = ${body}`);
-
-      response.error = `${error}`;
-    }
-
-    useWin()?.webContents.send(event, response);
-  });
-};
-
 const start = () => {
   on<CreateDocumentBody, Document>(Events.createDocument, (body) => {
     const id = createId();
@@ -133,7 +99,9 @@ const start = () => {
   on<unknown, Array<Document>>(Events.getDocuments, () => {
     const docs = store.get('documents');
 
-    const data = Object.keys(docs).map((it) => docs[it]);
+    const data = Object.keys(docs)
+      .filter((it) => !docs[it].parent)
+      .map((it) => docs[it]);
 
     return data;
   });
@@ -150,6 +118,8 @@ const start = () => {
     delete docs[id];
 
     store.set('documents', docs);
+
+    // TODO: delete children recursively
 
     return { msg: 'Document deleted successfully' };
   });
@@ -174,6 +144,16 @@ const start = () => {
     store.set('documents', docs);
 
     return doc;
+  });
+
+  on<string, Array<Document>>(Events.getDocumentChildren, (id) => {
+    const docs = store.get('documents');
+
+    const children = Object.keys(docs)
+      .filter((it) => docs[it].parent === id)
+      .map((it) => docs[it]);
+
+    return children;
   });
 };
 
