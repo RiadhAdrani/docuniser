@@ -1,4 +1,4 @@
-import { Priority } from 'types';
+import { Priority } from '../../types';
 import yup from 'yup';
 
 export const validation = {

@@ -22,7 +22,19 @@ const checkAndMigrate = () => {
 
   const docs = store.get('documents');
 
+  console.log(docs);
+
   Object.keys(docs).forEach((key) => {
+    const parent = docs[key].parent;
+
+    // check for parent
+    if (parent && !docs[parent]) {
+      // delete parentless document
+      updated = true;
+
+      delete docs[parent];
+    }
+
     if (!hasProperty(docs[key], 'createdAt')) {
       docs[key].createdAt = new Date();
 
@@ -116,7 +128,22 @@ const start = () => {
 
     store.set('documents', docs);
 
+    const children: Array<string> = [];
+
     // TODO: delete children recursively
+    const deleteChildren = (id: string) => {
+      Object.keys(docs).forEach((key) => {
+        if (docs[key].parent !== id) return;
+
+        children.push(key);
+
+        deleteChildren(key);
+      });
+    };
+
+    children.forEach((key) => delete docs[key]);
+
+    log(`deleted (${children.length}) sub children`);
 
     return { msg: 'Document deleted successfully' };
   });
