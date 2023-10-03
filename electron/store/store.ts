@@ -3,7 +3,8 @@ import { Events, CreateDocumentBody, Document, UpdateDocumentBody } from '../../
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
 import { hasProperty } from '@riadh-adrani/obj-utils';
-import { on } from './utils';
+import { log, on } from './utils';
+import { validation } from './validation';
 
 const store = new ElectronStore<{ documents: Record<string, Document> }>({
   schema: {
@@ -42,10 +43,6 @@ const checkAndMigrate = () => {
   }
 };
 
-const log = (msg: string) => {
-  console.log(`[STORE]: ${msg}`);
-};
-
 const init = () => {
   const docs = store.get('documents');
 
@@ -66,10 +63,10 @@ const start = () => {
   on<CreateDocumentBody, Document>(Events.createDocument, (body) => {
     const id = createId();
 
-    // TODO: validation
+    const validBody = validation.createDocument.validateSync(body);
 
     const document: Document = {
-      ...body,
+      ...validBody,
       createdAt: new Date(),
       updatedAt: new Date(),
       id,
@@ -125,9 +122,9 @@ const start = () => {
   });
 
   on<UpdateDocumentBody, Document>(Events.updateDocument, (body) => {
-    // TODO: verify body
+    const validBody = validation.updateDocument.validateSync(body);
 
-    const { id } = body;
+    const { id } = validBody;
 
     const docs = store.get('documents');
 
@@ -137,7 +134,7 @@ const start = () => {
       throw 'Document not found';
     }
 
-    doc = { ...doc, ...body, updatedAt: new Date() };
+    doc = { ...doc, ...validBody, updatedAt: new Date() };
 
     docs[id] = doc;
 

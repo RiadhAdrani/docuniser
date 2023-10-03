@@ -16,16 +16,16 @@ const DocumentPage = () => {
 
   const [state, setState] = useState<'done' | 'loading' | 'error'>('loading');
   const [document, setDocument] = useState<Document | undefined>(undefined);
-  const [queue, setQueue] = useState<Omit<UpdateDocumentBody, 'id'>>({});
+  const [queue, setQueue] = useState<UpdateDocumentBody>({ id: `${id}` });
   const [children, setChildren] = useState<Array<Document>>([]);
 
-  const debouncedQueue = useDebounce(queue, 1000);
+  const debouncedQueue = useDebounce(queue, 500);
 
   const update: <T>(value: T, key: keyof Document) => void = (value, key) => {
     if (!document) return;
 
     setDocument({ ...document, [key]: value });
-    setQueue({ [key]: value });
+    setQueue((state) => ({ ...state, [key]: value }));
   };
 
   const createChild = useCallback(
@@ -57,14 +57,23 @@ const DocumentPage = () => {
 
     setState('loading');
 
-    fetchEvent<string, Document>(Events.getDocument, id)
-      .then((res) => {
-        const { data } = res;
+    setTimeout(() => {
+      fetchEvent<string, Document>(Events.getDocument, id)
+        .then((res) => {
+          const { data } = res;
 
-        setDocument(data);
-        setState('done');
-      })
-      .catch(() => setState('error'));
+          // fetch chiildren
+          setDocument(data);
+
+          fetchEvent<string, Array<Document>>(Events.getDocumentChildren, id).then((res) => {
+            const { data } = res;
+
+            setChildren(data);
+            setState('done');
+          });
+        })
+        .catch(() => setState('error'));
+    }, 200);
   }, [id]);
 
   useEffect(() => {
@@ -80,11 +89,11 @@ const DocumentPage = () => {
   useEffect(() => {
     if (!document) return;
 
-    if (Object.keys(debouncedQueue).length === 0) return;
+    if (Object.keys(debouncedQueue).length === 1) return;
 
-    const body: UpdateDocumentBody = { id: document.id, ...debouncedQueue };
+    const body: UpdateDocumentBody = { ...debouncedQueue };
 
-    setQueue({});
+    setQueue({ id: `${id}` });
 
     updateDocument(body)
       .then((doc) => {
@@ -96,7 +105,7 @@ const DocumentPage = () => {
   }, [debouncedQueue, id]);
 
   useEffect(() => {
-    setQueue({});
+    setQueue({ id: `${id}` });
   }, [id]);
 
   return (
@@ -108,6 +117,11 @@ const DocumentPage = () => {
           <p className="text-0.7em">
             We were unable to load this document, or it may have been deleted.
           </p>
+        </div>
+      ) : state === 'loading' ? (
+        <div className="col-center m-y-auto text-zinc-400 w-full h-full text-1.75em animate-pulse">
+          <span className="i-mdi-widgets-outline text-1.5em" />
+          <p className="text-0.7em">Loading document</p>
         </div>
       ) : (
         document && (
@@ -147,7 +161,7 @@ const DocumentPage = () => {
                   maxLength={1000}
                   minRows={5}
                   maxRows={10}
-                  description={`${document.shortDescription?.length}/1000`}
+                  description={`${document.shortDescription?.length ?? 0}/1000`}
                   value={document.shortDescription}
                   onInput={(e) => update(e.currentTarget.value, 'shortDescription')}
                 />
