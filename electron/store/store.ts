@@ -22,8 +22,6 @@ const checkAndMigrate = () => {
 
   const docs = store.get('documents');
 
-  console.log(docs);
-
   Object.keys(docs).forEach((key) => {
     const parent = docs[key].parent;
 

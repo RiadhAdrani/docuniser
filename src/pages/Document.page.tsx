@@ -8,6 +8,7 @@ import { Events, Document, UpdateDocumentBody, CreateDocumentBody } from '../../
 import { useDebounce } from 'usehooks-ts';
 import Icon from '@/components/Icon/Icon';
 import DocumentList from '@/components/Document/Document.List';
+import { toast } from 'sonner';
 
 const DocumentPage = () => {
   const { updateDocument } = useContext(DataContext);
@@ -35,8 +36,12 @@ const DocumentPage = () => {
       fetchEvent<CreateDocumentBody, Document>(Events.createDocument, { ...body, parent: id })
         .then((it) => {
           setChildren((state) => [...state, it.data]);
+
+          toast.success('Document created successfully');
         })
-        .catch(() => {});
+        .catch(() => {
+          toast.error('Unable to create document');
+        });
     },
     [id]
   );
@@ -46,8 +51,12 @@ const DocumentPage = () => {
       fetchEvent<string, void>(Events.createDocument, id)
         .then(() => {
           setChildren((state) => state.filter((it) => it.id !== id));
+
+          toast.success('Document deleted successfully');
         })
-        .catch(() => {});
+        .catch(() => {
+          toast.error('Unable to delete document');
+        });
     },
     [id]
   );
@@ -72,7 +81,10 @@ const DocumentPage = () => {
             setState('done');
           });
         })
-        .catch(() => setState('error'));
+        .catch(() => {
+          setState('error');
+          toast.error('Unable to fetch document');
+        });
     }, 200);
   }, [id]);
 
@@ -95,13 +107,9 @@ const DocumentPage = () => {
 
     setQueue({ id: `${id}` });
 
-    updateDocument(body)
-      .then((doc) => {
-        setDocument(doc);
-      })
-      .catch(() => {
-        // TODO: display notification
-      });
+    updateDocument(body).then((doc) => {
+      setDocument(doc);
+    });
   }, [debouncedQueue, id]);
 
   useEffect(() => {
