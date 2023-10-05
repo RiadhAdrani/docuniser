@@ -9,10 +9,11 @@ import {
   SelectItem,
 } from '@nextui-org/react';
 import { useState } from 'react';
-import { Document, Priority } from '../../../types';
+import { CreateDocumentBody, Priority } from '../../../types';
+import { CardType } from './Document.Card';
 
 export type CreateDocumenteModalProps = {
-  onCreate: (item: Omit<Document, 'id'>) => void;
+  onCreate: (item: CreateDocumentBody) => void;
 };
 
 export const CreateDocumentModal = (props: CreateDocumenteModalProps) => {
@@ -53,7 +54,7 @@ export const CreateDocumentModal = (props: CreateDocumenteModalProps) => {
               onClick={() => {
                 if (!title) return;
 
-                const doc: Omit<Document, 'id'> = { priority, title };
+                const doc: CreateDocumentBody = { priority, title };
 
                 props.onCreate(doc);
                 onClose();

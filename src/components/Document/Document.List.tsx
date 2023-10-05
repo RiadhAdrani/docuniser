@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { CreateDocumentBody, Document } from '../../../types';
 import useDocumentList from '@/hooks/useDocumentList';
 import {
@@ -19,7 +19,8 @@ import {
 import { CreateDocumentModal } from './Document.Create';
 import Icon from '../Icon/Icon';
 import DocumentCreateCard from './Document.Create.Card';
-import DocumentCard from './Document.Card';
+import DocumentCard, { CardType } from './Document.Card';
+import { UIContext } from '@/context/UI.context';
 
 export interface DocumentListProps {
   initial: Array<Document>;
@@ -28,6 +29,8 @@ export interface DocumentListProps {
 }
 
 const DocumentList = (props: DocumentListProps) => {
+  const { cardType, setCardType } = useContext(UIContext);
+
   const [showCreateDocumentModal, setShowCreateDocumentModal] = useState(false);
 
   const { docs, setAsc, setSort, asc, sort, query, setQuery } = useDocumentList(props.initial);
@@ -58,15 +61,21 @@ const DocumentList = (props: DocumentListProps) => {
     []
   );
 
+  const gridOptions = useMemo<Array<{ label: string; value: CardType }>>(
+    () => [
+      { label: 'Normal grid', value: 'normal' },
+      { label: 'Compact grid', value: 'compact' },
+      { label: 'List', value: 'list' },
+    ],
+    []
+  );
+
   return (
     <>
-      <Modal isOpen={showCreateDocumentModal} onOpenChange={setShowCreateDocumentModal}>
-        <CreateDocumentModal onCreate={(body) => props.onCreated(body)} />
-      </Modal>
       <div className="col gap-4">
         <div>
           <Navbar
-            className=""
+            className="z-0"
             isBordered
             classNames={{
               base: 'items-stretch justify-stretch',
@@ -81,6 +90,25 @@ const DocumentList = (props: DocumentListProps) => {
                 type="search"
                 placeholder="Seach Documents"
               />
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly variant="flat">
+                    <Icon icon="i-mdi-grid" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownSection title={'Select display options'}>
+                    {gridOptions.map((opt) => (
+                      <DropdownItem onClick={() => setCardType(opt.value)}>
+                        <div className={`row-center justify-between`}>
+                          <span>{opt.label}</span>
+                          {opt.value === cardType && <Icon icon="i-mdi-check" />}
+                        </div>
+                      </DropdownItem>
+                    ))}
+                  </DropdownSection>
+                </DropdownMenu>
+              </Dropdown>
             </NavbarContent>
             <NavbarContent justify="end">
               <NavbarItem>
@@ -120,13 +148,22 @@ const DocumentList = (props: DocumentListProps) => {
             </NavbarContent>
           </Navbar>
         </div>
-        <div className="p-5px flex-1 gap-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className={`p-5px flex-1 ${
+            cardType === 'list'
+              ? 'col gap-5'
+              : 'gap-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          } `}
+        >
           <DocumentCreateCard onClick={() => setShowCreateDocumentModal(true)} />
           {docs.map((doc) => (
-            <DocumentCard key={doc.id} document={doc} onDelete={props.onDeleted} />
+            <DocumentCard key={doc.id} type={cardType} document={doc} onDelete={props.onDeleted} />
           ))}
         </div>
       </div>
+      <Modal isOpen={showCreateDocumentModal} onOpenChange={setShowCreateDocumentModal}>
+        <CreateDocumentModal onCreate={(body) => props.onCreated(body)} />
+      </Modal>
     </>
   );
 };

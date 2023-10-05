@@ -8,7 +8,7 @@ import {
   Modal,
   Tooltip,
 } from '@nextui-org/react';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useMemo, useState } from 'react';
 import { Document } from '../../../types';
 import { Link } from 'react-router-dom';
 import DocumentCardEmptyDescription from './Document.Card.EmptyDescription';
@@ -17,17 +17,36 @@ import DeleteDocumentModal from './Document.Delete.Modal';
 import Icon from '../Icon/Icon';
 import { timeAgo } from '@/helpers/time';
 
+export type CardType = 'normal' | 'compact' | 'list';
+
 const DocumentCard = (
-  props: PropsWithChildren<{ document: Document; onDelete: (id: string) => void }>
+  props: PropsWithChildren<{ document: Document; type?: CardType; onDelete: (id: string) => void }>
 ) => {
   const { document } = props;
 
   const [showDelete, setShowDelete] = useState(false);
 
+  const classes = useMemo(() => {
+    let type = props.type;
+
+    if (!type || type === 'normal') {
+      return {
+        card: 'h-300px',
+      };
+    }
+
+    if (type === 'compact') {
+      return { card: '' };
+    } else {
+      // ? list
+      return { card: '' };
+    }
+  }, [props.type]);
+
   return (
     <>
       <Link to={`/document?id=${props.document.id}`}>
-        <Card className="h-300px w-full">
+        <Card className={`${classes.card} w-full`}>
           <CardHeader>
             <div className="row items-center justify-between w-full overflow-hidden gap-4">
               <div className="col flex-1 overflow-hidden">
@@ -41,26 +60,25 @@ const DocumentCard = (
               <DocumentPriorityChip priority={document.priority} />
             </div>
           </CardHeader>
+          {props.type === 'normal' && (
+            <>
+              <Divider />
+              <CardBody className="overflow-hidden text-ellipsis">
+                {document.shortDescription ? (
+                  <>
+                    <p className="text-0.85em text-zinc-500 overflow-hidden text-ellipsis line-clamp-3">
+                      {document.shortDescription}
+                    </p>
+                  </>
+                ) : (
+                  <DocumentCardEmptyDescription />
+                )}
+              </CardBody>
+            </>
+          )}
+
           <Divider />
-          <CardBody className="overflow-hidden text-ellipsis">
-            {document.shortDescription ? (
-              <>
-                <p className="text-0.85em text-zinc-500 overflow-hidden text-ellipsis line-clamp-3">
-                  {document.shortDescription}
-                </p>
-              </>
-            ) : (
-              <DocumentCardEmptyDescription />
-            )}
-          </CardBody>
-          <Divider />
-          <CardFooter
-            className="cursor-auto"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
+          <CardFooter>
             <div className="row w-full gap-1 items-center justify-between">
               <div>
                 <div className="text-zinc-400 text-0.75em row-center gap-2">
@@ -68,7 +86,13 @@ const DocumentCard = (
                   <span>updated {timeAgo(document.updatedAt)}</span>
                 </div>
               </div>
-              <div className="row gap-1">
+              <div
+                className="row gap-1 cursor-auto"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              >
                 <Tooltip content="Delete">
                   <Button
                     variant="flat"
@@ -81,6 +105,18 @@ const DocumentCard = (
                     }}
                   >
                     <Icon icon="i-mdi-trash-outline" className="text-zinc-800" />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="Duplicate">
+                  <Button
+                    variant="flat"
+                    isIconOnly
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  >
+                    <Icon icon="i-mdi-content-copy" className="text-zinc-800" />
                   </Button>
                 </Tooltip>
               </div>
