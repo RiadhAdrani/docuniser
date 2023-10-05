@@ -1,8 +1,18 @@
 import PriorityPopover from '@/components/Document/Document.PriorityPopover';
 import { DataContext } from '@/context/Data.context';
-import { Button, Divider, Input, Textarea, Tooltip } from '@nextui-org/react';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Textarea,
+  Tooltip,
+} from '@nextui-org/react';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchEvent } from '@/helpers/utils';
 import { Events, Document, UpdateDocumentBody, CreateDocumentBody } from '../../types';
 import { useDebounce } from 'usehooks-ts';
@@ -11,7 +21,9 @@ import DocumentList from '@/components/Document/Document.List';
 import { toast } from 'sonner';
 
 const DocumentPage = () => {
-  const { updateDocument } = useContext(DataContext);
+  const navigate = useNavigate();
+
+  const { updateDocument, deleteDocument } = useContext(DataContext);
   const [search] = useSearchParams();
   const id = useMemo(() => search.get('id'), [search.get('id')]);
 
@@ -19,6 +31,21 @@ const DocumentPage = () => {
   const [document, setDocument] = useState<Document | undefined>(undefined);
   const [queue, setQueue] = useState<UpdateDocumentBody>({ id: `${id}` });
   const [children, setChildren] = useState<Array<Document>>([]);
+
+  const moreOptions = useMemo(
+    () => [
+      {
+        label: 'Delete',
+        action: () => {
+          if (!id) return;
+
+          deleteDocument(id);
+          navigate('/');
+        },
+      },
+    ],
+    [id]
+  );
 
   const debouncedQueue = useDebounce(queue, 500);
 
@@ -150,17 +177,20 @@ const DocumentPage = () => {
                     priority={document.priority}
                     onChanged={(p) => update(p, 'priority')}
                   />
-                  <Tooltip content="Delete">
-                    <Button
-                      isIconOnly
-                      variant="flat"
-                      onClick={() => {
-                        // TODO:
-                      }}
-                    >
-                      <Icon icon="i-mdi-dots-vertical" className="text-zinc-600" />
-                    </Button>
-                  </Tooltip>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button isIconOnly variant="flat">
+                        <Icon icon="i-mdi-dots-vertical" className="text-zinc-600" />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu>
+                      {moreOptions.map((it, idx) => (
+                        <DropdownItem key={idx} onClick={it.action}>
+                          {it.label}
+                        </DropdownItem>
+                      ))}
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </div>
               <div>
