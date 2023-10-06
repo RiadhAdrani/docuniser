@@ -20,7 +20,12 @@ import { timeAgo } from '@/helpers/time';
 export type CardType = 'normal' | 'compact' | 'list';
 
 const DocumentCard = (
-  props: PropsWithChildren<{ document: Document; type?: CardType; onDelete: (id: string) => void }>
+  props: PropsWithChildren<{
+    document: Document;
+    type?: CardType;
+    onDelete: (id: string) => void;
+    onDuplicate: (id: string) => void;
+  }>
 ) => {
   const { document } = props;
 
@@ -42,6 +47,23 @@ const DocumentCard = (
       return { card: '' };
     }
   }, [props.type]);
+
+  const actions = useMemo(
+    () =>
+      [
+        {
+          label: 'Delete',
+          icon: 'i-mdi-trash',
+          action: () => setShowDelete(true),
+        },
+        {
+          label: 'Duplicate',
+          icon: 'i-mdi-content-copy',
+          action: () => props.onDuplicate(props.document.id),
+        },
+      ] as const,
+    []
+  );
 
   return (
     <>
@@ -93,32 +115,22 @@ const DocumentCard = (
                   e.preventDefault();
                 }}
               >
-                <Tooltip content="Delete">
-                  <Button
-                    variant="flat"
-                    isIconOnly
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
+                {actions.map((it, idx) => (
+                  <Tooltip key={idx} content={it.label}>
+                    <Button
+                      variant="flat"
+                      isIconOnly
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
 
-                      setShowDelete(true);
-                    }}
-                  >
-                    <Icon icon="i-mdi-trash-outline" className="text-zinc-800" />
-                  </Button>
-                </Tooltip>
-                <Tooltip content="Duplicate">
-                  <Button
-                    variant="flat"
-                    isIconOnly
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                    }}
-                  >
-                    <Icon icon="i-mdi-content-copy" className="text-zinc-800" />
-                  </Button>
-                </Tooltip>
+                        it.action();
+                      }}
+                    >
+                      <Icon icon={it.icon} className="text-zinc-800" />
+                    </Button>
+                  </Tooltip>
+                ))}
               </div>
             </div>
           </CardFooter>

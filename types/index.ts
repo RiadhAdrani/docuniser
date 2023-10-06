@@ -5,6 +5,7 @@ export enum Events {
   createDocument = 'post:document',
   deleteDocument = 'delete:document',
   updateDocument = 'patch:document',
+  duplicateDocument = 'post:duplicate-document',
 }
 
 export enum Priority {

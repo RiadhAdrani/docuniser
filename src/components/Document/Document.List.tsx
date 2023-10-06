@@ -26,6 +26,7 @@ export interface DocumentListProps {
   initial: Array<Document>;
   onCreated: (body: CreateDocumentBody) => void;
   onDeleted: (id: string) => void;
+  onDuplicated: (id: string) => void;
 }
 
 const DocumentList = (props: DocumentListProps) => {
@@ -157,7 +158,13 @@ const DocumentList = (props: DocumentListProps) => {
         >
           <DocumentCreateCard onClick={() => setShowCreateDocumentModal(true)} />
           {docs.map((doc) => (
-            <DocumentCard key={doc.id} type={cardType} document={doc} onDelete={props.onDeleted} />
+            <DocumentCard
+              key={doc.id}
+              type={cardType}
+              document={doc}
+              onDelete={props.onDeleted}
+              onDuplicate={props.onDuplicated}
+            />
           ))}
         </div>
       </div>

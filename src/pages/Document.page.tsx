@@ -88,6 +88,30 @@ const DocumentPage = () => {
     [id]
   );
 
+  const fetchChildren = useCallback(async () => {
+    if (!id) return;
+
+    fetchEvent<string, Array<Document>>(Events.getDocumentChildren, id).then((it) => {
+      setChildren(it.data);
+    });
+  }, [id]);
+
+  const duplicateDoc = useCallback(
+    (id: string) => {
+      fetchEvent<string>(Events.duplicateDocument, id)
+        .then(() => {
+          toast.success('Document duplicated successfully.');
+
+          // we load document
+          fetchChildren();
+        })
+        .catch(() => {
+          toast.error('Unable to duplicate document');
+        });
+    },
+    [id]
+  );
+
   useEffect(() => {
     if (!id) return;
 
@@ -98,15 +122,10 @@ const DocumentPage = () => {
         .then((res) => {
           const { data } = res;
 
-          // fetch chiildren
+          // fetch children
           setDocument(data);
 
-          fetchEvent<string, Array<Document>>(Events.getDocumentChildren, id).then((res) => {
-            const { data } = res;
-
-            setChildren(data);
-            setState('done');
-          });
+          fetchChildren().then(() => setState('done'));
         })
         .catch(() => {
           setState('error');
@@ -209,6 +228,7 @@ const DocumentPage = () => {
                 initial={children}
                 onCreated={(body) => createChild(body)}
                 onDeleted={(id) => deleteChild(id)}
+                onDuplicated={(id) => duplicateDoc(id)}
               />
             </div>
           </>

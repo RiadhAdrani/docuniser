@@ -2,7 +2,7 @@ import ElectronStore from 'electron-store';
 import { Events, CreateDocumentBody, Document, UpdateDocumentBody } from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
-import { hasProperty } from '@riadh-adrani/obj-utils';
+import { hasProperty, omit, pick } from '@riadh-adrani/obj-utils';
 import { log, on } from './utils';
 import { validation } from './validation';
 
@@ -176,6 +176,35 @@ const start = () => {
       .map((it) => docs[it]);
 
     return children;
+  });
+
+  on<string>(Events.duplicateDocument, (id) => {
+    const docs = store.get('documents');
+
+    const target = docs[id];
+
+    if (!target) {
+      throw 'Document not found';
+    }
+
+    const duplicate = (target: Document, parent?: string) => {
+      const id = createId();
+
+      const dup: Document = { ...omit(target, 'id'), parent, id, title: `${target.title} - dup` };
+
+      docs[id] = dup;
+
+      // search for all children and duplicate them
+      Object.keys(docs).forEach((key) => {
+        if (docs[key].parent !== target.id) return;
+
+        duplicate(docs[key], id);
+      });
+    };
+
+    duplicate(target, target.parent);
+
+    store.set('documents', docs);
   });
 };
 

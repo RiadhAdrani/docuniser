@@ -9,6 +9,7 @@ export interface DataContext {
   deleteDocument: (id: string) => void;
   updateDocument: (body: UpdateDocumentBody) => Promise<Document>;
   getDocument: (id: string) => Document | undefined;
+  duplicateDocument: (id: string) => Promise<void>;
 }
 
 export const DataContext = createContext<DataContext>({
@@ -17,6 +18,7 @@ export const DataContext = createContext<DataContext>({
   deleteDocument: () => 0,
   getDocument: () => undefined,
   updateDocument: async () => ({} as unknown as Document),
+  duplicateDocument: async () => undefined,
 });
 
 export const DataProvider = (props: PropsWithChildren) => {
@@ -58,6 +60,20 @@ export const DataProvider = (props: PropsWithChildren) => {
     });
   };
 
+  const duplicateDocument: DataContext['duplicateDocument'] = async (id) => {
+    try {
+      await fetchEvent<string>(Events.duplicateDocument, id);
+
+      toast.success('Document duplicated successfully.');
+
+      const { data } = await fetchEvent<undefined, Array<Document>>(Events.getDocuments, undefined);
+
+      setDocuments(data);
+    } catch (error) {
+      toast.error('Unable to duplicate document.');
+    }
+  };
+
   // fetch for the first time
   useEffect(() => {
     // register all related events
@@ -70,7 +86,14 @@ export const DataProvider = (props: PropsWithChildren) => {
 
   return (
     <DataContext.Provider
-      value={{ deleteDocument, createDocument, documents, getDocument, updateDocument }}
+      value={{
+        deleteDocument,
+        createDocument,
+        documents,
+        getDocument,
+        updateDocument,
+        duplicateDocument,
+      }}
     >
       {props.children}
     </DataContext.Provider>

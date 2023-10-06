@@ -24,7 +24,8 @@ export const on: <B = unknown, R = unknown>(
       log(`processed event "${event}" successfully`);
     } catch (error) {
       log(`error processing event "${event}"`);
-      log(`body = ${body}`);
+      log(`body : ${body}`);
+      log(`error : ${error}`);
 
       response.error = `${error}`;
     }
