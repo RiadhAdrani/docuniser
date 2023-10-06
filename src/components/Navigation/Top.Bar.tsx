@@ -1,9 +1,22 @@
-import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem, Tooltip } from '@nextui-org/react';
-import { useMemo } from 'react';
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Tooltip,
+} from '@nextui-org/react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import About from '../About/About';
 
 const TopBar = () => {
   const navigate = useNavigate();
+
+  const [showAbout, setShowAbout] = useState(false);
 
   const leftButtons = useMemo(() => {
     return [
@@ -33,7 +46,7 @@ const TopBar = () => {
         icon: 'i-mdi-language',
       },
       {
-        onClick: () => 0,
+        onClick: () => setShowAbout((state) => !state),
         tooltip: 'About',
         icon: 'i-mdi-about-outline',
       },
@@ -69,6 +82,9 @@ const TopBar = () => {
           ))}
         </NavbarContent>
       </Navbar>
+      <Modal isOpen={showAbout} onClose={() => setShowAbout(false)}>
+        <About />
+      </Modal>
     </>
   );
 };
