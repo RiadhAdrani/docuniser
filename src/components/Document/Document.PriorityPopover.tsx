@@ -43,7 +43,7 @@ const PriorityPopover = (props: { priority: Priority; onChanged: (value: Priorit
         <DropdownTrigger>
           <Button color={color as 'primary'} variant="flat">
             <i className={icon} />
-            {props.priority}
+            {t(`priority:${props.priority}`)}
           </Button>
         </DropdownTrigger>
         <DropdownMenu>

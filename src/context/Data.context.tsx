@@ -34,7 +34,7 @@ export const DataContext = createContext<DataContext>({
 });
 
 export const DataProvider = (props: PropsWithChildren) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [documents, setDocuments] = useState<Array<Document>>([]);
 
   const [preference, _setPreference] = useState<Preference>({
@@ -117,9 +117,14 @@ export const DataProvider = (props: PropsWithChildren) => {
     fetchEvent<undefined, Preference>(Events.getPreference, undefined).then((it) => {
       const { data } = it;
 
-      setPreference(data);
+      _setPreference(data);
     });
   }, []);
+
+  // detect language changes
+  useEffect(() => {
+    i18n.changeLanguage(preference.lang);
+  }, [preference.lang]);
 
   return (
     <DataContext.Provider

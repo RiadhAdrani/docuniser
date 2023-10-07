@@ -8,7 +8,7 @@ import {
   Modal,
   Tooltip,
 } from '@nextui-org/react';
-import { PropsWithChildren, useMemo, useState } from 'react';
+import { PropsWithChildren, useContext, useMemo, useState } from 'react';
 import { Document } from '../../../types';
 import { Link } from 'react-router-dom';
 import DocumentCardEmptyDescription from './Document.Card.EmptyDescription';
@@ -17,6 +17,7 @@ import DeleteDocumentModal from './Document.Delete.Modal';
 import Icon from '../Icon/Icon';
 import { timeAgo } from '@/helpers/time';
 import { useTranslation } from 'react-i18next';
+import { DataContext } from '@/context/Data.context';
 
 export type CardType = 'normal' | 'compact' | 'list';
 
@@ -29,6 +30,8 @@ const DocumentCard = (
   }>
 ) => {
   const { document } = props;
+
+  const { preference } = useContext(DataContext);
 
   const { t } = useTranslation();
 
@@ -108,7 +111,11 @@ const DocumentCard = (
               <div>
                 <div className="text-zinc-400 text-0.75em row-center gap-2">
                   <Icon icon="i-mdi-clock-outline" />
-                  <span>{t('document:updatedAt', { time: timeAgo(document.updatedAt) })}</span>
+                  <span>
+                    {t('document:updatedAt', {
+                      time: timeAgo(document.updatedAt),
+                    })}
+                  </span>
                 </div>
               </div>
               <div

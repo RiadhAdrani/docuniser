@@ -11,10 +11,10 @@ export enum Events {
 }
 
 export enum Priority {
-  low = 'Low',
-  medium = 'Medium',
-  high = 'High',
-  urgent = 'Urgent',
+  low = 'low',
+  medium = 'medium',
+  high = 'high',
+  urgent = 'urgent',
 }
 
 export interface Base {

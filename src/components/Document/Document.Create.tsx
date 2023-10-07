@@ -40,9 +40,9 @@ export const CreateDocumentModal = (props: CreateDocumenteModalProps) => {
                 setPriority(Array.from(keys as Set<Priority>)[0]);
               }}
             >
-              {Object.values(Priority).map((it) => (
-                <SelectItem key={it} value={it}>
-                  {it}
+              {Object.keys(Priority).map((it) => (
+                <SelectItem key={it} value={Object.values(Priority)[it as unknown as number]}>
+                  {t(`priority:${it}`)}
                 </SelectItem>
               ))}
             </Select>
