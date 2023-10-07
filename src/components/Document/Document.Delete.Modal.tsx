@@ -1,21 +1,24 @@
 import { Button, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
+import { useTranslation } from 'react-i18next';
 
 export type DocumentDeleteModalProps = {
   onConfirm: () => void;
 };
 
 export const DeleteDocumentModal = (props: DocumentDeleteModalProps) => {
+  const { t } = useTranslation();
+
   return (
     <ModalContent>
       {(onClose) => (
         <>
-          <ModalHeader>Delete Document</ModalHeader>
+          <ModalHeader>{t('document:deleteModal.title')}</ModalHeader>
           <ModalBody>
-            <p>Are you sure you want to delete this document ?</p>
+            <p>{t('document:deleteModal.text')}</p>
           </ModalBody>
           <ModalFooter>
             <Button color="danger" variant="flat" onClick={onClose}>
-              Close
+              {t('common:cancel')}
             </Button>
             <Button
               color="danger"
@@ -24,7 +27,7 @@ export const DeleteDocumentModal = (props: DocumentDeleteModalProps) => {
                 onClose();
               }}
             >
-              Confirm
+              {t('common:delete')}
             </Button>
           </ModalFooter>
         </>

@@ -1,9 +1,12 @@
 import { DataContext } from '@/context/Data.context';
 import { Button } from '@nextui-org/react';
 import { PropsWithChildren, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const DocumentCreateCard = (props: PropsWithChildren<{ onClick: () => void }>) => {
   const { preference } = useContext(DataContext);
+
+  const { t } = useTranslation('document');
 
   return (
     <Button
@@ -12,7 +15,7 @@ const DocumentCreateCard = (props: PropsWithChildren<{ onClick: () => void }>) =
       onClick={props.onClick}
     >
       <span className="i-mdi-plus text-2em" />
-      <p>Create new document</p>
+      <p>{t('create')}</p>
     </Button>
   );
 };

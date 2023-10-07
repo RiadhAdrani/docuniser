@@ -16,6 +16,7 @@ import DocumentPriorityChip from './Document.PriorityChip';
 import DeleteDocumentModal from './Document.Delete.Modal';
 import Icon from '../Icon/Icon';
 import { timeAgo } from '@/helpers/time';
+import { useTranslation } from 'react-i18next';
 
 export type CardType = 'normal' | 'compact' | 'list';
 
@@ -28,6 +29,8 @@ const DocumentCard = (
   }>
 ) => {
   const { document } = props;
+
+  const { t } = useTranslation();
 
   const [showDelete, setShowDelete] = useState(false);
 
@@ -52,12 +55,12 @@ const DocumentCard = (
     () =>
       [
         {
-          label: 'Delete',
-          icon: 'i-mdi-trash',
+          label: 'common:delete',
+          icon: 'i-mdi-trash-outline',
           action: () => setShowDelete(true),
         },
         {
-          label: 'Duplicate',
+          label: 'common:duplicate',
           icon: 'i-mdi-content-copy',
           action: () => props.onDuplicate(props.document.id),
         },
@@ -105,7 +108,7 @@ const DocumentCard = (
               <div>
                 <div className="text-zinc-400 text-0.75em row-center gap-2">
                   <Icon icon="i-mdi-clock-outline" />
-                  <span>updated {timeAgo(document.updatedAt)}</span>
+                  <span>{t('document:updatedAt', { time: timeAgo(document.updatedAt) })}</span>
                 </div>
               </div>
               <div
@@ -116,7 +119,7 @@ const DocumentCard = (
                 }}
               >
                 {actions.map((it, idx) => (
-                  <Tooltip key={idx} content={it.label}>
+                  <Tooltip key={idx} content={t(it.label)}>
                     <Button
                       variant="flat"
                       isIconOnly

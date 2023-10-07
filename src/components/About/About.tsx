@@ -1,13 +1,16 @@
 import { ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
+import { useTranslation } from 'react-i18next';
 
 const About = () => {
+  const { t } = useTranslation('about');
+
   return (
     <ModalContent>
       <ModalHeader>
-        <p>About Docuniser</p>
+        <p>{t('header')}</p>
       </ModalHeader>
       <ModalBody>
-        <div>Docuniser is a simple document management system.</div>
+        <div>{t('text')}</div>
       </ModalBody>
       <ModalFooter />
     </ModalContent>

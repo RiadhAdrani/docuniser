@@ -9,6 +9,7 @@ import {
   UpdatePreferenceBody,
 } from '../../types/index';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export interface DataContext {
   documents: Array<Document>;
@@ -33,6 +34,7 @@ export const DataContext = createContext<DataContext>({
 });
 
 export const DataProvider = (props: PropsWithChildren) => {
+  const { t } = useTranslation();
   const [documents, setDocuments] = useState<Array<Document>>([]);
 
   const [preference, _setPreference] = useState<Preference>({
@@ -48,9 +50,9 @@ export const DataProvider = (props: PropsWithChildren) => {
       .then((it) => {
         setDocuments((state) => [...state, it.data]);
 
-        toast.success('Document created successfully');
+        toast.success(t('toast:document.create.success'));
       })
-      .catch(() => toast.error('Unable to create document'));
+      .catch(() => toast.error(t('toast:document.create.error')));
   };
 
   const deleteDocument: DataContext['deleteDocument'] = (id) => {
@@ -58,9 +60,9 @@ export const DataProvider = (props: PropsWithChildren) => {
       .then(() => {
         setDocuments((state) => state.filter((it) => it.id !== id));
 
-        toast.success('Document deleted successfully');
+        toast.success(t('toast:document.delete.success'));
       })
-      .catch(() => toast.error('Something went wrong while trying to delete document'));
+      .catch(() => toast.error(t('toast:document.delete.error')));
   };
 
   const getDocument: DataContext['getDocument'] = (id) => {
@@ -71,7 +73,7 @@ export const DataProvider = (props: PropsWithChildren) => {
     return fetchEvent<UpdateDocumentBody, Document>(Events.updateDocument, body).then((res) => {
       setDocuments((state) => state.map((it) => (it.id === body.id ? res.data : it)));
 
-      toast.success('Document updated successfully');
+      toast.success(t('toast:document.update.success'));
 
       return res.data;
     });
@@ -81,13 +83,13 @@ export const DataProvider = (props: PropsWithChildren) => {
     try {
       await fetchEvent<string>(Events.duplicateDocument, id);
 
-      toast.success('Document duplicated successfully.');
+      toast.success(t('toast:document.duplicate.success'));
 
       const { data } = await fetchEvent<undefined, Array<Document>>(Events.getDocuments, undefined);
 
       setDocuments(data);
     } catch (error) {
-      toast.error('Unable to duplicate document.');
+      toast.error(t('toast:document.duplicate.error'));
     }
   };
 
@@ -95,9 +97,11 @@ export const DataProvider = (props: PropsWithChildren) => {
     try {
       const res = await fetchEvent<UpdatePreferenceBody, Preference>(Events.updatePreference, body);
 
+      toast.success(t('toast:preference.update.success'));
+
       _setPreference(res.data);
     } catch (error) {
-      toast.error('Unable to update preference');
+      toast.error(t('toast:preference.update.error'));
     }
   };
 

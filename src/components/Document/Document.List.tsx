@@ -21,6 +21,7 @@ import Icon from '../Icon/Icon';
 import DocumentCreateCard from './Document.Create.Card';
 import DocumentCard, { CardType } from './Document.Card';
 import { DataContext } from '@/context/Data.context';
+import { useTranslation } from 'react-i18next';
 
 export interface DocumentListProps {
   initial: Array<Document>;
@@ -30,6 +31,8 @@ export interface DocumentListProps {
 }
 
 const DocumentList = (props: DocumentListProps) => {
+  const { t } = useTranslation();
+
   const { preference, setPreference } = useContext(DataContext);
 
   const [showCreateDocumentModal, setShowCreateDocumentModal] = useState(false);
@@ -39,23 +42,23 @@ const DocumentList = (props: DocumentListProps) => {
   const sortOptions = useMemo(
     () => [
       {
-        label: 'None',
+        label: 'sort:none',
         value: undefined,
       },
       {
-        label: 'Title',
+        label: 'sort:title',
         value: 'Title',
       },
       {
-        label: 'Creation',
+        label: 'sort:creation',
         value: 'Created At',
       },
       {
-        label: 'Update',
+        label: 'sort:update',
         value: 'Updated At',
       },
       {
-        label: 'Priority',
+        label: 'sort:priority',
         value: 'Priority',
       },
     ],
@@ -64,9 +67,9 @@ const DocumentList = (props: DocumentListProps) => {
 
   const gridOptions = useMemo<Array<{ label: string; value: CardType }>>(
     () => [
-      { label: 'Normal grid', value: 'normal' },
-      { label: 'Compact grid', value: 'compact' },
-      { label: 'List', value: 'list' },
+      { label: 'cardType:grid', value: 'normal' },
+      { label: 'cardType:compact', value: 'compact' },
+      { label: 'cardType:list', value: 'list' },
     ],
     []
   );
@@ -89,7 +92,7 @@ const DocumentList = (props: DocumentListProps) => {
                 onInput={(e) => setQuery(e.currentTarget.value)}
                 startContent={<Icon icon="i-mdi-search" />}
                 type="search"
-                placeholder="Seach Documents"
+                placeholder={t('document:search')}
               />
               <Dropdown>
                 <DropdownTrigger>
@@ -98,14 +101,14 @@ const DocumentList = (props: DocumentListProps) => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownSection title={'Select display options'}>
+                  <DropdownSection title={t('document:selectCardType')}>
                     {gridOptions.map((opt, idx) => (
                       <DropdownItem
                         key={idx}
                         onClick={() => setPreference({ cardType: opt.value })}
                       >
                         <div className={`row-center justify-between`}>
-                          <span>{opt.label}</span>
+                          <span>{t(opt.label)}</span>
                           {opt.value === preference.cardType && <Icon icon="i-mdi-check" />}
                         </div>
                       </DropdownItem>
@@ -119,17 +122,20 @@ const DocumentList = (props: DocumentListProps) => {
                 <Dropdown>
                   <DropdownTrigger>
                     <Button variant="flat">
-                      <Icon icon="i-mdi-sort-variant" /> <span>{sort ?? 'None'}</span>
+                      <Icon icon="i-mdi-sort-variant" />{' '}
+                      <span>
+                        {t(sortOptions.find((it) => it.value === sort)?.label ?? 'sort:none')}
+                      </span>
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu>
-                    <DropdownSection title={'Sort by'}>
+                    <DropdownSection title={t('common:sortBy')}>
                       {sortOptions.map((it) => (
                         <DropdownItem
-                          key={it.value ?? 'none'}
+                          key={t(it.value ?? 'none')}
                           onClick={() => setSort(it.value as undefined)}
                         >
-                          {it.label}
+                          {t(it.label)}
                         </DropdownItem>
                       ))}
                     </DropdownSection>
@@ -137,7 +143,7 @@ const DocumentList = (props: DocumentListProps) => {
                 </Dropdown>
               </NavbarItem>
               <NavbarItem>
-                <Tooltip content={`Sort direction`} placement="bottom">
+                <Tooltip content={t('common:sortDirection')} placement="bottom">
                   <div className="col-center">
                     <Switch
                       size="lg"

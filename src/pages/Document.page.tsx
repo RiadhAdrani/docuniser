@@ -18,8 +18,11 @@ import { useDebounce } from 'usehooks-ts';
 import Icon from '@/components/Icon/Icon';
 import DocumentList from '@/components/Document/Document.List';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const DocumentPage = () => {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
 
   const { updateDocument, deleteDocument } = useContext(DataContext);
@@ -34,7 +37,7 @@ const DocumentPage = () => {
   const moreOptions = useMemo(
     () => [
       {
-        label: 'Delete',
+        label: t('common:delete'),
         action: () => {
           if (!id) return;
 
@@ -63,29 +66,26 @@ const DocumentPage = () => {
         .then((it) => {
           setChildren((state) => [...state, it.data]);
 
-          toast.success('Document created successfully');
+          toast.success(t('toast:document.create.success'));
         })
         .catch(() => {
-          toast.error('Unable to create document');
+          toast.error(t('toast:document.create.error'));
         });
     },
     [id]
   );
 
-  const deleteChild = useCallback(
-    (id: string) => {
-      fetchEvent<string, void>(Events.createDocument, id)
-        .then(() => {
-          setChildren((state) => state.filter((it) => it.id !== id));
+  const deleteChild = (id: string) => {
+    fetchEvent<string, void>(Events.deleteDocument, id)
+      .then(() => {
+        setChildren((state) => state.filter((it) => it.id !== id));
 
-          toast.success('Document deleted successfully');
-        })
-        .catch(() => {
-          toast.error('Unable to delete document');
-        });
-    },
-    [id]
-  );
+        toast.success(t('toast:document.delete.success'));
+      })
+      .catch((e) => {
+        toast.error(t('toast:document.delete.error'));
+      });
+  };
 
   const fetchChildren = useCallback(async () => {
     if (!id) return;
@@ -99,13 +99,13 @@ const DocumentPage = () => {
     (id: string) => {
       fetchEvent<string>(Events.duplicateDocument, id)
         .then(() => {
-          toast.success('Document duplicated successfully.');
+          toast.success(t('toast:document.duplicate.success'));
 
           // we load document
           fetchChildren();
         })
         .catch(() => {
-          toast.error('Unable to duplicate document');
+          toast.error(t('toast:document.duplicate.error'));
         });
     },
     [id]
@@ -128,7 +128,7 @@ const DocumentPage = () => {
         })
         .catch(() => {
           setState('error');
-          toast.error('Unable to fetch document');
+          toast.error(t('toast:document.get.success'));
         });
     }, 200);
   }, [id]);
@@ -166,15 +166,13 @@ const DocumentPage = () => {
       {state === 'error' ? (
         <div className="col-center m-y-auto text-zinc-400 w-full h-full text-1.75em">
           <span className="i-mdi-text-box-remove-outline text-1.5em" />
-          <p>Oops</p>
-          <p className="text-0.7em">
-            We were unable to load this document, or it may have been deleted.
-          </p>
+          <p>{t('common:oops')}</p>
+          <p className="text-0.7em">{t('document:page.failedToGet')}</p>
         </div>
       ) : state === 'loading' ? (
-        <div className="col-center m-y-auto text-zinc-400 w-full h-full text-1.75em animate-pulse">
+        <div className="col-center m-y-auto text-zinc-400 w-full h-full text-1.75em animate-pulse gap-2">
           <span className="i-mdi-widgets-outline text-1.5em" />
-          <p className="text-0.7em">Loading document</p>
+          <p className="text-0.7em">{t('common:loading')}</p>
         </div>
       ) : (
         document && (
@@ -184,7 +182,7 @@ const DocumentPage = () => {
                 <Input
                   variant="underlined"
                   color="primary"
-                  placeholder="Document title"
+                  placeholder={t('document:page.titleInput')}
                   value={document.title}
                   classNames={{ input: 'text-1.5em font-bold placeholder:font-500 ' }}
                   onInput={(e) => update(e.currentTarget.value, 'title')}
@@ -213,7 +211,7 @@ const DocumentPage = () => {
               </div>
               <div>
                 <Textarea
-                  placeholder="Document short description"
+                  placeholder={t('document:page.descriptionInput')}
                   maxLength={1000}
                   minRows={5}
                   maxRows={10}

@@ -11,9 +11,12 @@ import { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import About from '../About/About';
 import { DataContext } from '@/context/Data.context';
+import { useTranslation } from 'react-i18next';
 
 const TopBar = () => {
   const navigate = useNavigate();
+
+  const { t } = useTranslation();
 
   const { preference, setPreference } = useContext(DataContext);
 
@@ -23,17 +26,17 @@ const TopBar = () => {
     return [
       {
         onClick: () => navigate(-1),
-        tooltip: 'Go back',
+        tooltip: t('common:goBack'),
         icon: 'i-mdi-chevron-left',
       },
       {
         onClick: () => navigate('/'),
-        tooltip: 'Home',
+        tooltip: t('common:home'),
         icon: 'i-mdi-home-outline',
       },
       {
         onClick: () => 0,
-        tooltip: 'Refresh',
+        tooltip: t('common:refresh'),
         icon: 'i-mdi-refresh',
       },
     ];
@@ -43,17 +46,17 @@ const TopBar = () => {
     return [
       {
         onClick: () => setPreference({ theme: preference.theme === 'dark' ? 'light' : 'dark' }),
-        tooltip: 'Theme',
+        tooltip: t('common:theme'),
         icon: preference.theme === 'light' ? 'i-mdi-weather-sunny' : 'i-mdi-weather-night',
       },
       {
         onClick: () => setPreference({ lang: preference.lang === 'en' ? 'fr' : 'en' }),
-        tooltip: `Language : ${preference.lang === 'fr' ? 'Français' : 'English'}`,
+        tooltip: t(`language:${preference.lang}`),
         icon: 'i-mdi-language',
       },
       {
         onClick: () => setShowAbout((state) => !state),
-        tooltip: 'About',
+        tooltip: t('common:about'),
         icon: 'i-mdi-about-outline',
       },
     ];
@@ -73,7 +76,7 @@ const TopBar = () => {
         </NavbarBrand>
         <NavbarContent justify="center">
           <NavbarItem>
-            <h1>Docuniser</h1>
+            <h1>{t('common:docuniser')}</h1>
           </NavbarItem>
         </NavbarContent>
         <NavbarContent justify="end" className="gap-1">

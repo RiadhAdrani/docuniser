@@ -5,14 +5,19 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-  Tooltip,
 } from '@nextui-org/react';
 import { Priority } from '../../../types';
 import { getPriorityData } from '@/helpers/document';
 import Icon from '../Icon/Icon';
+import { useTranslation } from 'react-i18next';
+
+// just to load these icons, unocss does not scan ts file
+['i-mdi-check', 'i-mdi-timelapse', 'i-mdi-warning', 'i-mdi-dangerous', 'i-mdi-check'];
 
 const Option = (opts: { priority: Priority; onClick: (v: Priority) => void }) => {
   const priority = getPriorityData(opts.priority);
+
+  const { t } = useTranslation('priority');
 
   return (
     <Button
@@ -22,13 +27,15 @@ const Option = (opts: { priority: Priority; onClick: (v: Priority) => void }) =>
       onClick={() => opts.onClick(opts.priority)}
     >
       <Icon icon={priority.icon as `i-mdi-`} />
-      {opts.priority}
+      {t(opts.priority)}
     </Button>
   );
 };
 
 const PriorityPopover = (props: { priority: Priority; onChanged: (value: Priority) => void }) => {
   const { color, icon } = getPriorityData(props.priority);
+
+  const { t } = useTranslation('document');
 
   return (
     <>
@@ -41,7 +48,7 @@ const PriorityPopover = (props: { priority: Priority; onChanged: (value: Priorit
         </DropdownTrigger>
         <DropdownMenu>
           <DropdownSection
-            title={'Choose Priority'}
+            title={t('choosePriority')}
             classNames={{ divider: 'hidden', base: 'col' }}
           >
             {Object.values(Priority)

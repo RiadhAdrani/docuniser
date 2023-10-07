@@ -6,6 +6,8 @@ import { NextUIProvider } from '@nextui-org/react';
 import { RouterProvider } from 'react-router-dom';
 import browserRouter from './router';
 
+import './locales/i18n';
+
 import './index.css';
 import 'virtual:uno.css';
 

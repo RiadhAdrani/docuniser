@@ -10,6 +10,7 @@ import {
 } from '@nextui-org/react';
 import { useState } from 'react';
 import { CreateDocumentBody, Priority } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 export type CreateDocumenteModalProps = {
   onCreate: (item: CreateDocumentBody) => void;
@@ -19,19 +20,21 @@ export const CreateDocumentModal = (props: CreateDocumenteModalProps) => {
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState<Priority>(Priority.low);
 
+  const { t } = useTranslation();
+
   return (
     <ModalContent>
       {(onClose) => (
         <>
-          <ModalHeader>Create Document</ModalHeader>
+          <ModalHeader>{t('document:createModal.title')}</ModalHeader>
           <ModalBody>
             <Input
-              placeholder="Document title"
+              placeholder={t('document:createModal.input')}
               value={title}
               onInput={(e) => setTitle(e.currentTarget.value)}
             />
             <Select
-              label="Select priority"
+              label={t('document:createModal.priority')}
               selectedKeys={new Set([priority])}
               onSelectionChange={(keys) => {
                 setPriority(Array.from(keys as Set<Priority>)[0]);
@@ -46,7 +49,7 @@ export const CreateDocumentModal = (props: CreateDocumenteModalProps) => {
           </ModalBody>
           <ModalFooter>
             <Button color="primary" variant="flat" onClick={onClose}>
-              Close
+              {t('common:close')}
             </Button>
             <Button
               color="primary"
@@ -59,7 +62,7 @@ export const CreateDocumentModal = (props: CreateDocumenteModalProps) => {
                 onClose();
               }}
             >
-              Create
+              {t('common:create')}
             </Button>
           </ModalFooter>
         </>
