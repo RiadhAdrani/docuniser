@@ -81,7 +81,7 @@ const DocumentCard = (
                 <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden text-zinc-600">
                   {document.title}
                 </h3>
-                <p className="text-zinc-400 text-0.7em whitespace-nowrap text-ellipsis overflow-hidden">
+                <p className="text-0.7em whitespace-nowrap text-ellipsis overflow-hidden">
                   {document.id}
                 </p>
               </div>
@@ -94,7 +94,7 @@ const DocumentCard = (
               <CardBody className="overflow-hidden text-ellipsis">
                 {document.shortDescription ? (
                   <>
-                    <p className="text-0.85em text-zinc-500 overflow-hidden text-ellipsis line-clamp-3">
+                    <p className="text-0.85em overflow-hidden text-ellipsis line-clamp-3">
                       {document.shortDescription}
                     </p>
                   </>
@@ -109,7 +109,7 @@ const DocumentCard = (
           <CardFooter>
             <div className="row w-full gap-1 items-center justify-between">
               <div>
-                <div className="text-zinc-400 text-0.75em row-center gap-2">
+                <div className="text-0.75em row-center gap-2">
                   <Icon icon="i-mdi-clock-outline" />
                   <span>
                     {t('document:updatedAt', {
@@ -137,7 +137,7 @@ const DocumentCard = (
                         it.action();
                       }}
                     >
-                      <Icon icon={it.icon} className="text-zinc-800" />
+                      <Icon icon={it.icon} />
                     </Button>
                   </Tooltip>
                 ))}

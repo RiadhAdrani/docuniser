@@ -126,6 +126,11 @@ export const DataProvider = (props: PropsWithChildren) => {
     i18n.changeLanguage(preference.lang);
   }, [preference.lang]);
 
+  // detect theme changes
+  useEffect(() => {
+    document.body.className = `${preference.theme} text-foreground bg-background`;
+  }, [preference.theme]);
+
   return (
     <DataContext.Provider
       value={{
