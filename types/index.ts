@@ -6,6 +6,8 @@ export enum Events {
   deleteDocument = 'delete:document',
   updateDocument = 'patch:document',
   duplicateDocument = 'post:duplicate-document',
+  getPreference = 'get:preference',
+  updatePreference = 'update:preference',
 }
 
 export enum Priority {
@@ -38,3 +40,17 @@ export interface StoreResponse<T = unknown> {
   message?: string;
   error?: string;
 }
+
+export type UpdatePreferenceBody = Partial<Preference>;
+
+export type CardType = 'normal' | 'compact' | 'list';
+
+export type Language = 'fr' | 'en';
+
+export type Theme = 'light' | 'dark';
+
+export type Preference = {
+  cardType: CardType;
+  lang: Language;
+  theme: Theme;
+};

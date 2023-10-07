@@ -1,6 +1,13 @@
 import { PropsWithChildren, createContext, useEffect, useState } from 'react';
-import { fetchEvent, onEvent, sendEvent } from '@/helpers/utils';
-import { Events, CreateDocumentBody, Document, UpdateDocumentBody } from '../../types/index';
+import { fetchEvent } from '@/helpers/utils';
+import {
+  Events,
+  CreateDocumentBody,
+  Document,
+  UpdateDocumentBody,
+  Preference,
+  UpdatePreferenceBody,
+} from '../../types/index';
 import { toast } from 'sonner';
 
 export interface DataContext {
@@ -10,6 +17,8 @@ export interface DataContext {
   updateDocument: (body: UpdateDocumentBody) => Promise<Document>;
   getDocument: (id: string) => Document | undefined;
   duplicateDocument: (id: string) => Promise<void>;
+  preference: Preference;
+  setPreference: (body: UpdatePreferenceBody) => Promise<void>;
 }
 
 export const DataContext = createContext<DataContext>({
@@ -19,10 +28,18 @@ export const DataContext = createContext<DataContext>({
   getDocument: () => undefined,
   updateDocument: async () => ({} as unknown as Document),
   duplicateDocument: async () => undefined,
+  preference: { cardType: 'normal', lang: 'en', theme: 'light' },
+  setPreference: async () => undefined,
 });
 
 export const DataProvider = (props: PropsWithChildren) => {
   const [documents, setDocuments] = useState<Array<Document>>([]);
+
+  const [preference, _setPreference] = useState<Preference>({
+    cardType: 'normal',
+    lang: 'en',
+    theme: 'light',
+  });
 
   const createDocument: DataContext['createDocument'] = (body) => {
     if (!body.title) return;
@@ -74,6 +91,16 @@ export const DataProvider = (props: PropsWithChildren) => {
     }
   };
 
+  const setPreference: DataContext['setPreference'] = async (body) => {
+    try {
+      const res = await fetchEvent<UpdatePreferenceBody, Preference>(Events.updatePreference, body);
+
+      _setPreference(res.data);
+    } catch (error) {
+      toast.error('Unable to update preference');
+    }
+  };
+
   // fetch for the first time
   useEffect(() => {
     // register all related events
@@ -81,6 +108,12 @@ export const DataProvider = (props: PropsWithChildren) => {
       const { data } = it;
 
       setDocuments(data);
+    });
+
+    fetchEvent<undefined, Preference>(Events.getPreference, undefined).then((it) => {
+      const { data } = it;
+
+      setPreference(data);
     });
   }, []);
 
@@ -93,6 +126,8 @@ export const DataProvider = (props: PropsWithChildren) => {
         getDocument,
         updateDocument,
         duplicateDocument,
+        preference,
+        setPreference,
       }}
     >
       {props.children}

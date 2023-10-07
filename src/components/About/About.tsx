@@ -9,7 +9,7 @@ const About = () => {
       <ModalBody>
         <div>Docuniser is a simple document management system.</div>
       </ModalBody>
-      <ModalFooter></ModalFooter>
+      <ModalFooter />
     </ModalContent>
   );
 };

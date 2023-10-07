@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.1.21",
+    "@iconify-json/flag": "^1.1.38",
     "@iconify-json/mdi": "^1.1.54",
     "@nextui-org/react": "^2.1.13",
     "@playwright/test": "^1.37.1",

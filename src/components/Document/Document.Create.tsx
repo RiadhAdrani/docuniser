@@ -10,7 +10,6 @@ import {
 } from '@nextui-org/react';
 import { useState } from 'react';
 import { CreateDocumentBody, Priority } from '../../../types';
-import { CardType } from './Document.Card';
 
 export type CreateDocumenteModalProps = {
   onCreate: (item: CreateDocumentBody) => void;

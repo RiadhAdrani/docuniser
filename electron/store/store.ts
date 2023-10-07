@@ -1,15 +1,35 @@
 import ElectronStore from 'electron-store';
-import { Events, CreateDocumentBody, Document, UpdateDocumentBody } from '../../types/index';
+import {
+  Events,
+  CreateDocumentBody,
+  Document,
+  UpdateDocumentBody,
+  Preference,
+  UpdatePreferenceBody,
+} from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
-import { hasProperty, omit, pick } from '@riadh-adrani/obj-utils';
+import { hasProperty, omit } from '@riadh-adrani/obj-utils';
 import { log, on } from './utils';
 import { validation } from './validation';
 
-const store = new ElectronStore<{ documents: Record<string, Document> }>({
+type Store = {
+  documents: Record<string, Document>;
+  preference: Preference;
+};
+
+const store = new ElectronStore<Store>({
   schema: {
     documents: {
       type: 'object',
+    },
+    preference: {
+      type: 'object',
+      properties: {
+        cardType: { type: 'string', default: 'normal' },
+        lang: { type: 'string', default: 'en' },
+        theme: { type: 'string', default: 'light' },
+      },
     },
   },
 });
@@ -18,7 +38,7 @@ const checkAndMigrate = () => {
   // ? documents
   // add createdAt and updatedAt
 
-  let updated = false;
+  let docUpdated = false;
 
   const docs = store.get('documents');
 
@@ -28,7 +48,7 @@ const checkAndMigrate = () => {
     // check for parent
     if (parent && !docs[parent]) {
       // delete parentless document
-      updated = true;
+      docUpdated = true;
 
       delete docs[parent];
     }
@@ -36,20 +56,31 @@ const checkAndMigrate = () => {
     if (!hasProperty(docs[key], 'createdAt')) {
       docs[key].createdAt = new Date();
 
-      updated = true;
+      docUpdated = true;
     }
 
     if (!hasProperty(docs[key], 'updatedAt')) {
       docs[key].updatedAt = new Date();
 
-      updated = true;
+      docUpdated = true;
     }
   });
 
-  if (updated) {
+  if (docUpdated) {
     log('[Migration] migrating documents...');
     store.set('documents', docs);
     log('[Migration] document migrated successfully');
+  }
+
+  // ? preferences
+  const preference = store.get('preference');
+
+  if (!preference) {
+    const defaultPref: Store['preference'] = { cardType: 'normal', lang: 'en', theme: 'light' };
+
+    log('[Migration] migrating preference...');
+    store.set('preference', defaultPref);
+    log('[Migration] preference migrated successfully');
   }
 };
 
@@ -205,6 +236,24 @@ const start = () => {
     duplicate(target, target.parent);
 
     store.set('documents', docs);
+  });
+
+  on<undefined, Preference>(Events.getPreference, () => {
+    const data = store.get('preference');
+
+    return data;
+  });
+
+  on<UpdatePreferenceBody, Preference>(Events.updatePreference, (body) => {
+    const validated = validation.updatePreference.validateSync(body);
+
+    let data = store.get('preference');
+
+    data = { ...data, ...validated };
+
+    store.set('preference', data);
+
+    return data;
   });
 };
 

@@ -20,7 +20,7 @@ import { CreateDocumentModal } from './Document.Create';
 import Icon from '../Icon/Icon';
 import DocumentCreateCard from './Document.Create.Card';
 import DocumentCard, { CardType } from './Document.Card';
-import { UIContext } from '@/context/UI.context';
+import { DataContext } from '@/context/Data.context';
 
 export interface DocumentListProps {
   initial: Array<Document>;
@@ -30,7 +30,7 @@ export interface DocumentListProps {
 }
 
 const DocumentList = (props: DocumentListProps) => {
-  const { cardType, setCardType } = useContext(UIContext);
+  const { preference, setPreference } = useContext(DataContext);
 
   const [showCreateDocumentModal, setShowCreateDocumentModal] = useState(false);
 
@@ -99,11 +99,14 @@ const DocumentList = (props: DocumentListProps) => {
                 </DropdownTrigger>
                 <DropdownMenu>
                   <DropdownSection title={'Select display options'}>
-                    {gridOptions.map((opt) => (
-                      <DropdownItem onClick={() => setCardType(opt.value)}>
+                    {gridOptions.map((opt, idx) => (
+                      <DropdownItem
+                        key={idx}
+                        onClick={() => setPreference({ cardType: opt.value })}
+                      >
                         <div className={`row-center justify-between`}>
                           <span>{opt.label}</span>
-                          {opt.value === cardType && <Icon icon="i-mdi-check" />}
+                          {opt.value === preference.cardType && <Icon icon="i-mdi-check" />}
                         </div>
                       </DropdownItem>
                     ))}
@@ -151,7 +154,7 @@ const DocumentList = (props: DocumentListProps) => {
         </div>
         <div
           className={`p-5px flex-1 ${
-            cardType === 'list'
+            preference.cardType === 'list'
               ? 'col gap-5'
               : 'gap-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
           } `}
@@ -160,7 +163,7 @@ const DocumentList = (props: DocumentListProps) => {
           {docs.map((doc) => (
             <DocumentCard
               key={doc.id}
-              type={cardType}
+              type={preference.cardType}
               document={doc}
               onDelete={props.onDeleted}
               onDuplicate={props.onDuplicated}

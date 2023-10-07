@@ -1,20 +1,21 @@
 import {
   Button,
   Modal,
-  ModalBody,
-  ModalContent,
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   Tooltip,
 } from '@nextui-org/react';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import About from '../About/About';
+import { DataContext } from '@/context/Data.context';
 
 const TopBar = () => {
   const navigate = useNavigate();
+
+  const { preference, setPreference } = useContext(DataContext);
 
   const [showAbout, setShowAbout] = useState(false);
 
@@ -30,19 +31,24 @@ const TopBar = () => {
         tooltip: 'Home',
         icon: 'i-mdi-home-outline',
       },
+      {
+        onClick: () => 0,
+        tooltip: 'Refresh',
+        icon: 'i-mdi-refresh',
+      },
     ];
   }, []);
 
   const rightButtons = useMemo(() => {
     return [
       {
-        onClick: () => 0,
-        tooltip: 'Refresh',
-        icon: 'i-mdi-refresh',
+        onClick: () => setPreference({ theme: preference.theme === 'dark' ? 'light' : 'dark' }),
+        tooltip: 'Theme',
+        icon: preference.theme === 'light' ? 'i-mdi-weather-sunny' : 'i-mdi-weather-night',
       },
       {
-        onClick: () => 0,
-        tooltip: 'Language',
+        onClick: () => setPreference({ lang: preference.lang === 'en' ? 'fr' : 'en' }),
+        tooltip: `Language : ${preference.lang === 'fr' ? 'Français' : 'English'}`,
         icon: 'i-mdi-language',
       },
       {
@@ -51,7 +57,7 @@ const TopBar = () => {
         icon: 'i-mdi-about-outline',
       },
     ];
-  }, []);
+  }, [preference]);
 
   return (
     <>
