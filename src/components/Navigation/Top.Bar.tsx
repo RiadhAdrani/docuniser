@@ -35,7 +35,7 @@ const TopBar = () => {
         icon: 'i-mdi-home-outline',
       },
       {
-        onClick: () => 0,
+        onClick: () => window.location.reload(),
         tooltip: 'common:refresh',
         icon: 'i-mdi-refresh',
       },
