@@ -78,7 +78,7 @@ const DocumentCard = (
           <CardHeader>
             <div className="row items-center justify-between w-full overflow-hidden gap-4">
               <div className="col flex-1 overflow-hidden">
-                <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden text-zinc-600">
+                <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden">
                   {document.title}
                 </h3>
                 <p className="text-0.7em whitespace-nowrap text-ellipsis overflow-hidden">
@@ -113,7 +113,7 @@ const DocumentCard = (
                   <Icon icon="i-mdi-clock-outline" />
                   <span>
                     {t('document:updatedAt', {
-                      time: timeAgo(document.updatedAt),
+                      time: timeAgo(document.updatedAt, preference.lang),
                     })}
                   </span>
                 </div>

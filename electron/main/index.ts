@@ -2,7 +2,6 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { release } from 'node:os';
 import { join } from 'node:path';
 import { update } from './update';
-import { start } from '../../backend/server';
 import '../store/store';
 
 // The built directory structure
@@ -87,7 +86,6 @@ async function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  await start();
   createWindow();
 });
 
