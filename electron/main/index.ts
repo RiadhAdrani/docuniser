@@ -3,6 +3,10 @@ import { release } from 'node:os';
 import { join } from 'node:path';
 import { update } from './update';
 import '../store/store';
+import contextMenu from 'electron-context-menu';
+
+// TODO: i18n
+contextMenu({ showSaveImage: true, showInspectElement: false, showSearchWithGoogle: false });
 
 // The built directory structure
 //
