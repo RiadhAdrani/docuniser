@@ -8,6 +8,8 @@ export enum Events {
   duplicateDocument = 'post:duplicate-document',
   getPreference = 'get:preference',
   updatePreference = 'update:preference',
+  fetchFilesData = 'post:files-data',
+  openFile = 'chore:open-file',
 }
 
 export enum Priority {
@@ -28,12 +30,13 @@ export interface Document extends Base {
   priority: Priority;
   shortDescription?: string;
   parent?: string;
+  files: Array<string>;
 }
 
 export type CreateDocumentBody = Pick<Document, 'title' | 'priority' | 'parent'>;
 
 export type UpdateDocumentBody = Pick<Document, 'id'> &
-  Partial<Pick<Document, 'title' | 'priority' | 'shortDescription'>>;
+  Partial<Pick<Document, 'title' | 'priority' | 'shortDescription' | 'files'>>;
 
 export interface StoreResponse<T = unknown> {
   data: T;
@@ -53,4 +56,10 @@ export type Preference = {
   cardType: CardType;
   lang: Language;
   theme: Theme;
+};
+
+export type FileData = {
+  path: string;
+  name: string;
+  type?: string;
 };

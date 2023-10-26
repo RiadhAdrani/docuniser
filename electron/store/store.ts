@@ -6,12 +6,16 @@ import {
   UpdateDocumentBody,
   Preference,
   UpdatePreferenceBody,
+  FileData,
 } from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
-import { hasProperty, omit } from '@riadh-adrani/obj-utils';
+import { hasProperty, isArray, omit } from '@riadh-adrani/obj-utils';
 import { log, on } from './utils';
 import { validation } from './validation';
+
+import { basename } from 'path';
+import openExplorer from 'open-file-explorer';
 
 type Store = {
   documents: Record<string, Document>;
@@ -64,6 +68,11 @@ const checkAndMigrate = () => {
 
       docUpdated = true;
     }
+
+    if (!isArray(docs[key]['files'])) {
+      docs[key].files = [];
+      docUpdated = true;
+    }
   });
 
   if (docUpdated) {
@@ -100,7 +109,10 @@ export const createId = (): string => {
   return `${random(0, 1000)}-${random(0, 1000)}-${Date.now()}`;
 };
 
-const start = () => {
+const start = async () => {
+  const fileType = await import('file-type');
+  const { fileTypeFromFile } = fileType;
+
   on<CreateDocumentBody, Document>(Events.createDocument, (body) => {
     const id = createId();
 
@@ -111,6 +123,7 @@ const start = () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       id,
+      files: [],
     };
 
     const docs = store.get('documents');
@@ -254,6 +267,39 @@ const start = () => {
     store.set('preference', data);
 
     return data;
+  });
+
+  on<Array<string>, Promise<Array<FileData>>>(Events.fetchFilesData, async (files) => {
+    const data: Array<FileData> = [];
+
+    for (const path of files) {
+      const name = basename(path);
+
+      const fileData: FileData = { name, path };
+
+      const mime = await fileTypeFromFile(name);
+
+      if (mime) {
+        fileData.type = mime.ext ?? 'file';
+      }
+
+      data.push(fileData);
+    }
+
+    return data;
+  });
+
+  on<string>(Events.openFile, async (path) => {
+    return new Promise((res, rej) => {
+      openExplorer(path, (err) => {
+        if (err) {
+          rej(err);
+          return;
+        }
+
+        res('success');
+      });
+    });
   });
 };
 

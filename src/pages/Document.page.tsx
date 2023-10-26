@@ -2,6 +2,7 @@ import PriorityPopover from '@/components/Document/Document.PriorityPopover';
 import { DataContext } from '@/context/Data.context';
 import {
   Button,
+  Card,
   Divider,
   Dropdown,
   DropdownItem,
@@ -19,6 +20,7 @@ import Icon from '@/components/Icon/Icon';
 import DocumentList from '@/components/Document/Document.List';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import DocumentFiles from '@/components/Document/Document.Files';
 
 const DocumentPage = () => {
   const { t } = useTranslation();
@@ -110,6 +112,30 @@ const DocumentPage = () => {
     },
     [id]
   );
+
+  const browseFiles = useCallback(() => {
+    if (!document) return;
+
+    const input = window.document.createElement('input');
+    input.type = 'file';
+
+    input.oninput = (e) => {
+      const data = Array.from((e.currentTarget as any).files as FileList).map((it) => it.path);
+
+      const files = [...document.files, ...data];
+
+      fetchEvent<UpdateDocumentBody, Document>(Events.updateDocument, {
+        id: document.id,
+        files,
+      }).then((it) => {
+        setDocument({ ...document, files: it.data.files });
+      });
+    };
+
+    input.click();
+  }, [document]);
+
+  console.log(document?.files);
 
   useEffect(() => {
     if (!id) return;
@@ -219,6 +245,15 @@ const DocumentPage = () => {
                   value={document.shortDescription}
                   onInput={(e) => update(e.currentTarget.value, 'shortDescription')}
                 />
+              </div>
+              <div className="row flex-wrap gap-2">
+                <Card>
+                  <Button className="row-center" onClick={browseFiles}>
+                    <Icon icon="i-mdi-add" />
+                    <p>Add File</p>
+                  </Button>
+                </Card>
+                <DocumentFiles items={document.files} />
               </div>
               <Divider />
               <DocumentList

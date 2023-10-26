@@ -12,13 +12,13 @@ export const on: <B = unknown, R = unknown>(
   event: Events,
   callback: EventCallback<B, R>
 ) => void = (event, callback) => {
-  ipcMain.on(event, (_, body) => {
+  ipcMain.on(event, async (_, body) => {
     log(`received event "${event}"`);
 
     let response: StoreResponse = { data: undefined };
 
     try {
-      const data = callback(body);
+      const data = await callback(body);
 
       response.data = data as unknown;
       log(`processed event "${event}" successfully`);
