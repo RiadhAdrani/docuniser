@@ -35,4 +35,18 @@ export const validation = {
       })
       .required(),
   }),
+  updateCheckListBody: yup.object({
+    documentId: yup.string().required(),
+    item: yup
+      .object({
+        id: yup.string().required(),
+        doneAt: yup.boolean().optional(),
+        text: yup.string().optional(),
+      })
+      .required(),
+  }),
+  deleteCheckListBody: yup.object({
+    documentId: yup.string().required(),
+    itemId: yup.string().required(),
+  }),
 };

@@ -82,7 +82,7 @@ export type CreateCheckListBody = {
 
 export type UpdateCheckListBody = {
   documentId: string;
-  item: Pick<CheckListItem, 'id'> & Partial<Pick<CheckListItem, 'doneAt' | 'text'>>;
+  item: Pick<CheckListItem, 'id'> & Partial<Pick<CheckListItem, 'text'> & { doneAt: boolean }>;
 };
 
 export type DeleteCheckListBody = {

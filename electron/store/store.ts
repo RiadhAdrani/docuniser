@@ -9,6 +9,8 @@ import {
   FileData,
   CreateCheckListBody,
   CheckListItem,
+  UpdateCheckListBody,
+  DeleteCheckListBody,
 } from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
@@ -325,6 +327,58 @@ const start = async () => {
     documents[documentId].checklist.push(checkItem);
 
     store.set('documents', documents);
+
+    return documents[documentId];
+  });
+
+  on<UpdateCheckListBody, Promise<Document>>(Events.updateDocumentCheckList, async (body) => {
+    const { documentId, item } = await validation.updateCheckListBody.validate(body);
+
+    const documents = store.get('documents');
+
+    if (!documents[documentId]) {
+      throw 'Document not found';
+    }
+
+    documents[documentId].checklist = documents[documentId].checklist.map((it) => {
+      if (it.id === item.id) {
+        if (item.doneAt) {
+          it.doneAt = new Date();
+        } else if (item.doneAt === false) {
+          it.doneAt = undefined;
+        }
+
+        if (item.text) {
+          it.text = item.text;
+        }
+      }
+
+      return it;
+    });
+
+    store.set('documents', documents);
+
+    return documents[documentId];
+  });
+
+  on<DeleteCheckListBody, Promise<Document>>(Events.deleteDocumentCheckList, async (body) => {
+    const { documentId, itemId } = await validation.deleteCheckListBody.validate(body);
+
+    const documents = store.get('documents');
+
+    if (!documents[documentId]) {
+      throw 'Document not found';
+    }
+
+    console.log(itemId);
+
+    documents[documentId].checklist = documents[documentId].checklist.filter(
+      (it) => it.id !== itemId
+    );
+
+    store.set('documents', documents);
+
+    console.log(documents[documentId]);
 
     return documents[documentId];
   });

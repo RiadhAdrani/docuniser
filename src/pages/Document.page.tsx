@@ -16,7 +16,15 @@ import {
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchEvent } from '@/helpers/utils';
-import { Events, Document, UpdateDocumentBody, CreateDocumentBody } from '../../types';
+import {
+  Events,
+  Document,
+  UpdateDocumentBody,
+  CreateDocumentBody,
+  CreateCheckListBody,
+  UpdateCheckListBody,
+  DeleteCheckListBody,
+} from '../../types';
 import { useDebounce } from 'usehooks-ts';
 import Icon from '@/components/Icon/Icon';
 import DocumentList from '@/components/Document/Document.List';
@@ -138,6 +146,63 @@ const DocumentPage = () => {
 
     input.click();
   }, [document]);
+
+  const createCheckList = useCallback(
+    (body: CreateCheckListBody['item']) => {
+      if (!document) return;
+
+      fetchEvent<CreateCheckListBody, Document>(Events.addDocumentCheckList, {
+        item: body,
+        documentId: document.id,
+      })
+        .then((it) => {
+          setDocument({ ...document, checklist: it.data.checklist });
+        })
+        .catch(() => {
+          // TODO: i18n
+          toast.error('Unable to create item');
+        });
+    },
+    [document]
+  );
+
+  const updateCheckList = useCallback(
+    (body: UpdateCheckListBody['item']) => {
+      if (!document) return;
+
+      fetchEvent<UpdateCheckListBody, Document>(Events.updateDocumentCheckList, {
+        item: body,
+        documentId: document.id,
+      })
+        .then((it) => {
+          setDocument({ ...document, checklist: it.data.checklist });
+        })
+        .catch(() => {
+          // TODO: i18n
+          toast.error('Unable to update item');
+        });
+    },
+    [document]
+  );
+
+  const removeCheckList = useCallback(
+    (itemId: string) => {
+      if (!document) return;
+
+      fetchEvent<DeleteCheckListBody, Document>(Events.deleteDocumentCheckList, {
+        itemId,
+        documentId: document.id,
+      })
+        .then((it) => {
+          setDocument({ ...document, checklist: it.data.checklist });
+        })
+        .catch(() => {
+          // TODO: i18n
+          toast.error('Unable to delete item');
+        });
+    },
+    [document]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -262,7 +327,12 @@ const DocumentPage = () => {
                     </div>
                   </AccordionItem>
                   <AccordionItem title={<SectionTitle>{t('common:checklist')}</SectionTitle>}>
-                    <DocumentCheckList />
+                    <DocumentCheckList
+                      document={document}
+                      create={createCheckList}
+                      update={updateCheckList}
+                      remove={removeCheckList}
+                    />
                   </AccordionItem>
                   <AccordionItem title={<SectionTitle>{t('common:documents')}</SectionTitle>}>
                     <DocumentList
