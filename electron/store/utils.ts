@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import { useWin } from '../main';
-import { Events, StoreResponse } from 'types';
+import { Base, Events, StoreResponse } from '../../types';
+import { createId } from './store';
 
 type EventCallback<B = unknown, R = unknown> = (body: B) => R;
 
@@ -33,3 +34,9 @@ export const on: <B = unknown, R = unknown>(
     useWin()?.webContents.send(event, response);
   });
 };
+
+export const createBase = (): Base => ({
+  createdAt: new Date(),
+  id: createId(),
+  updatedAt: new Date(),
+});

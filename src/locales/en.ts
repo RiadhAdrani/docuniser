@@ -43,6 +43,10 @@ export default {
     theme: 'Theme',
     oops: 'Oops',
     loading: 'Loading...',
+    checklist: 'Check List',
+    documents: 'Documents',
+    addFile: 'Add file',
+    files: 'Files',
   },
   theme: {
     light: 'Light',

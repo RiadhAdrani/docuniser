@@ -5,6 +5,11 @@ export enum Events {
   createDocument = 'post:document',
   deleteDocument = 'delete:document',
   updateDocument = 'patch:document',
+
+  addDocumentCheckList = 'post:document:checklist',
+  updateDocumentCheckList = 'patch:document:checklist',
+  deleteDocumentCheckList = 'delete:document:checklist',
+
   duplicateDocument = 'post:duplicate-document',
   getPreference = 'get:preference',
   updatePreference = 'update:preference',
@@ -25,12 +30,18 @@ export interface Base {
   updatedAt: Date;
 }
 
+export interface CheckListItem extends Base {
+  text: string;
+  doneAt?: Date;
+}
+
 export interface Document extends Base {
   title: string;
   priority: Priority;
   shortDescription?: string;
   parent?: string;
   files: Array<string>;
+  checklist: Array<CheckListItem>;
 }
 
 export type CreateDocumentBody = Pick<Document, 'title' | 'priority' | 'parent'>;
@@ -62,4 +73,19 @@ export type FileData = {
   path: string;
   name: string;
   type?: string;
+};
+
+export type CreateCheckListBody = {
+  documentId: string;
+  item: Pick<CheckListItem, 'text'>;
+};
+
+export type UpdateCheckListBody = {
+  documentId: string;
+  item: Pick<CheckListItem, 'id'> & Partial<Pick<CheckListItem, 'doneAt' | 'text'>>;
+};
+
+export type DeleteCheckListBody = {
+  documentId: string;
+  itemId: string;
 };

@@ -7,11 +7,13 @@ import {
   Preference,
   UpdatePreferenceBody,
   FileData,
+  CreateCheckListBody,
+  CheckListItem,
 } from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
 import { hasProperty, isArray, omit } from '@riadh-adrani/obj-utils';
-import { log, on } from './utils';
+import { log, on, createBase } from './utils';
 import { validation } from './validation';
 
 import { basename } from 'path';
@@ -73,6 +75,11 @@ const checkAndMigrate = () => {
       docs[key].files = [];
       docUpdated = true;
     }
+
+    if (!isArray(docs[key]['checklist'])) {
+      docs[key].checklist = [];
+      docUpdated = true;
+    }
   });
 
   if (docUpdated) {
@@ -124,6 +131,7 @@ const start = async () => {
       updatedAt: new Date(),
       id,
       files: [],
+      checklist: [],
     };
 
     const docs = store.get('documents');
@@ -172,7 +180,6 @@ const start = async () => {
 
     const children: Array<string> = [];
 
-    // TODO: delete children recursively
     const deleteChildren = (id: string) => {
       Object.keys(docs).forEach((key) => {
         if (docs[key].parent !== id) return;
@@ -300,6 +307,26 @@ const start = async () => {
         res('success');
       });
     });
+  });
+
+  on<CreateCheckListBody, Promise<Document>>(Events.addDocumentCheckList, async (body) => {
+    const { documentId, item } = await validation.createCheckListBody.validate(body);
+
+    const documents = store.get('documents');
+
+    if (!documents[documentId]) {
+      throw 'Document not found';
+    }
+
+    const { text } = item;
+
+    const checkItem: CheckListItem = { ...createBase(), text };
+
+    documents[documentId].checklist.push(checkItem);
+
+    store.set('documents', documents);
+
+    return documents[documentId];
   });
 };
 

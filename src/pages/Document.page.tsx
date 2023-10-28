@@ -1,6 +1,8 @@
 import PriorityPopover from '@/components/Document/Document.PriorityPopover';
 import { DataContext } from '@/context/Data.context';
 import {
+  Accordion,
+  AccordionItem,
   Button,
   Card,
   Divider,
@@ -21,6 +23,8 @@ import DocumentList from '@/components/Document/Document.List';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import DocumentFiles from '@/components/Document/Document.Files';
+import DocumentCheckList from '@/components/Document/Document.CheckList';
+import SectionTitle from '@/components/Text/Section.Title';
 
 const DocumentPage = () => {
   const { t } = useTranslation();
@@ -135,8 +139,6 @@ const DocumentPage = () => {
     input.click();
   }, [document]);
 
-  console.log(document?.files);
-
   useEffect(() => {
     if (!id) return;
 
@@ -239,29 +241,39 @@ const DocumentPage = () => {
                 <Textarea
                   placeholder={t('document:page.descriptionInput')}
                   maxLength={1000}
-                  minRows={5}
-                  maxRows={10}
+                  minRows={3}
+                  maxRows={5}
                   description={`${document.shortDescription?.length ?? 0}/1000`}
                   value={document.shortDescription}
                   onInput={(e) => update(e.currentTarget.value, 'shortDescription')}
                 />
               </div>
-              <div className="row flex-wrap gap-2">
-                <Card>
-                  <Button className="row-center" onClick={browseFiles}>
-                    <Icon icon="i-mdi-add" />
-                    <p>Add File</p>
-                  </Button>
-                </Card>
-                <DocumentFiles items={document.files} />
+              <div>
+                <Accordion showDivider={false}>
+                  <AccordionItem title={<SectionTitle>{t('common:files')}</SectionTitle>}>
+                    <div className="row flex-wrap gap-2">
+                      <Card>
+                        <Button className="row-center" variant="light" onClick={browseFiles}>
+                          <Icon icon="i-mdi-add" />
+                          <p>{t('common:addFile')}</p>
+                        </Button>
+                      </Card>
+                      <DocumentFiles items={document.files} />
+                    </div>
+                  </AccordionItem>
+                  <AccordionItem title={<SectionTitle>{t('common:checklist')}</SectionTitle>}>
+                    <DocumentCheckList />
+                  </AccordionItem>
+                  <AccordionItem title={<SectionTitle>{t('common:documents')}</SectionTitle>}>
+                    <DocumentList
+                      initial={children}
+                      onCreated={(body) => createChild(body)}
+                      onDeleted={(id) => deleteChild(id)}
+                      onDuplicated={(id) => duplicateDoc(id)}
+                    />
+                  </AccordionItem>
+                </Accordion>
               </div>
-              <Divider />
-              <DocumentList
-                initial={children}
-                onCreated={(body) => createChild(body)}
-                onDeleted={(id) => deleteChild(id)}
-                onDuplicated={(id) => duplicateDoc(id)}
-              />
             </div>
           </>
         )

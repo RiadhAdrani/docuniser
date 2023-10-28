@@ -27,4 +27,12 @@ export const validation = {
       .oneOf(['light', 'dark'] as Array<Theme>)
       .optional(),
   }),
+  createCheckListBody: yup.object({
+    documentId: yup.string().required(),
+    item: yup
+      .object({
+        text: yup.string().required(),
+      })
+      .required(),
+  }),
 };

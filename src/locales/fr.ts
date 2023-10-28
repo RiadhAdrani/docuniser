@@ -45,6 +45,7 @@ const fr: TranslationSchema = {
     theme: 'Thème',
     oops: 'Oops',
     loading: 'Chargement...',
+    checklist: 'Liste',
   },
   theme: {
     light: 'Lumière',
