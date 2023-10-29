@@ -11,6 +11,7 @@ import {
   CheckListItem,
   UpdateCheckListBody,
   DeleteCheckListBody,
+  AddFileBody,
 } from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
@@ -284,13 +285,11 @@ const start = async () => {
     for (const path of files) {
       const name = basename(path);
 
-      const fileData: FileData = { name, path };
+      const segments = name.split('.');
 
-      const mime = await fileTypeFromFile(name);
+      const type = segments.length > 1 ? segments.at(-1) : 'unknown';
 
-      if (mime) {
-        fileData.type = mime.ext ?? 'file';
-      }
+      const fileData: FileData = { name, path, type };
 
       data.push(fileData);
     }
@@ -311,7 +310,7 @@ const start = async () => {
     });
   });
 
-  on<CreateCheckListBody, Promise<Document>>(Events.addDocumentCheckList, async (body) => {
+  on<CreateCheckListBody, Promise<Document>>(Events.addCheckList, async (body) => {
     const { documentId, item } = await validation.createCheckListBody.validate(body);
 
     const documents = store.get('documents');
@@ -331,7 +330,7 @@ const start = async () => {
     return documents[documentId];
   });
 
-  on<UpdateCheckListBody, Promise<Document>>(Events.updateDocumentCheckList, async (body) => {
+  on<UpdateCheckListBody, Promise<Document>>(Events.updateCheckList, async (body) => {
     const { documentId, item } = await validation.updateCheckListBody.validate(body);
 
     const documents = store.get('documents');
@@ -361,7 +360,7 @@ const start = async () => {
     return documents[documentId];
   });
 
-  on<DeleteCheckListBody, Promise<Document>>(Events.deleteDocumentCheckList, async (body) => {
+  on<DeleteCheckListBody, Promise<Document>>(Events.deleteCheckList, async (body) => {
     const { documentId, itemId } = await validation.deleteCheckListBody.validate(body);
 
     const documents = store.get('documents');
@@ -370,15 +369,59 @@ const start = async () => {
       throw 'Document not found';
     }
 
-    console.log(itemId);
-
     documents[documentId].checklist = documents[documentId].checklist.filter(
       (it) => it.id !== itemId
     );
 
     store.set('documents', documents);
 
-    console.log(documents[documentId]);
+    return documents[documentId];
+  });
+
+  on<AddFileBody, Promise<Document>>(Events.addFile, async (body) => {
+    const { documentId, path } = await validation.addFile.validate(body);
+
+    const documents = store.get('documents');
+
+    if (!documents[documentId]) {
+      throw 'Document not found';
+    }
+
+    // check if file exists
+    const found = documents[documentId].files.includes(path);
+
+    if (found) {
+      console.log(documents[documentId].files);
+
+      throw 'File already exists';
+    }
+
+    documents[documentId].files.push(path);
+
+    store.set('documents', documents);
+
+    return documents[documentId];
+  });
+
+  on<AddFileBody, Promise<Document>>(Events.deleteFile, async (body) => {
+    const { documentId, path } = await validation.addFile.validate(body);
+
+    const documents = store.get('documents');
+
+    if (!documents[documentId]) {
+      throw 'Document not found';
+    }
+
+    // check if file exists
+    const found = documents[documentId].files.includes(path);
+
+    if (!found) {
+      throw 'File does not exist';
+    }
+
+    documents[documentId].files = documents[documentId].files.filter((file) => file !== path);
+
+    store.set('documents', documents);
 
     return documents[documentId];
   });

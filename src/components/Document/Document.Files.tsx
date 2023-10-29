@@ -3,16 +3,20 @@ import { Events, FileData } from '../../../types';
 import {
   Button,
   Card,
+  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Tooltip,
 } from '@nextui-org/react';
 import { fetchEvent } from '@/helpers/utils';
 import Icon from '../Icon/Icon';
+import { toast } from 'sonner';
 
 export type DocumentFilesProps = {
   items: Array<string>;
+  remove: (path: string) => void;
 };
 
 const DocumentFiles = (props: DocumentFilesProps) => {
@@ -25,16 +29,20 @@ const DocumentFiles = (props: DocumentFilesProps) => {
   }, [props.items]);
 
   const open = (item: FileData) => {
-    fetchEvent<string>(Events.openFile, item.path);
+    toast.message('Open file : Not implemented yet');
+    // fetchEvent<string>(Events.openFile, item.path);
   };
-
-  const remove = (item: FileData) => {};
 
   return (
     <>
       {data.map((it) => (
-        <Card key={it.path} className="row-center gap-3 p-l-3">
-          <span>{it.name}</span>
+        <Card key={it.path} classNames={{ base: 'shadow-md' }} className="row-center gap-3 p-l-3">
+          <Tooltip content={it.path}>
+            <span>{it.name}</span>
+          </Tooltip>
+          <Chip size="sm" color="secondary">
+            {it.type}
+          </Chip>
           <Dropdown>
             <DropdownTrigger>
               <Button isIconOnly variant="light">
@@ -43,7 +51,7 @@ const DocumentFiles = (props: DocumentFilesProps) => {
             </DropdownTrigger>
             <DropdownMenu>
               <DropdownItem onClick={() => open(it)}>Open</DropdownItem>
-              <DropdownItem onClick={() => remove(it)}>Remove</DropdownItem>
+              <DropdownItem onClick={() => props.remove(it.path)}>Remove</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </Card>

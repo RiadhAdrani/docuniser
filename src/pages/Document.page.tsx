@@ -24,6 +24,8 @@ import {
   CreateCheckListBody,
   UpdateCheckListBody,
   DeleteCheckListBody,
+  AddFileBody,
+  DeleteFileBody,
 } from '../../types';
 import { useDebounce } from 'usehooks-ts';
 import Icon from '@/components/Icon/Icon';
@@ -132,16 +134,9 @@ const DocumentPage = () => {
     input.type = 'file';
 
     input.oninput = (e) => {
-      const data = Array.from((e.currentTarget as any).files as FileList).map((it) => it.path);
+      const path = Array.from((e.currentTarget as any).files as FileList).map((it) => it.path)[0];
 
-      const files = [...document.files, ...data];
-
-      fetchEvent<UpdateDocumentBody, Document>(Events.updateDocument, {
-        id: document.id,
-        files,
-      }).then((it) => {
-        setDocument({ ...document, files: it.data.files });
-      });
+      addFile(path);
     };
 
     input.click();
@@ -151,7 +146,7 @@ const DocumentPage = () => {
     (body: CreateCheckListBody['item']) => {
       if (!document) return;
 
-      fetchEvent<CreateCheckListBody, Document>(Events.addDocumentCheckList, {
+      fetchEvent<CreateCheckListBody, Document>(Events.addCheckList, {
         item: body,
         documentId: document.id,
       })
@@ -170,7 +165,7 @@ const DocumentPage = () => {
     (body: UpdateCheckListBody['item']) => {
       if (!document) return;
 
-      fetchEvent<UpdateCheckListBody, Document>(Events.updateDocumentCheckList, {
+      fetchEvent<UpdateCheckListBody, Document>(Events.updateCheckList, {
         item: body,
         documentId: document.id,
       })
@@ -185,11 +180,49 @@ const DocumentPage = () => {
     [document]
   );
 
+  const addFile = useCallback(
+    (path: string) => {
+      if (!document) return;
+
+      fetchEvent<AddFileBody, Document>(Events.addFile, {
+        path,
+        documentId: document.id,
+      })
+        .then((it) => {
+          setDocument({ ...document, files: it.data.files });
+        })
+        .catch(() => {
+          // TODO: i18n
+          toast.error('Unable to add file');
+        });
+    },
+    [document]
+  );
+
+  const removeFile = useCallback(
+    (path: string) => {
+      if (!document) return;
+
+      fetchEvent<DeleteFileBody, Document>(Events.deleteFile, {
+        path,
+        documentId: document.id,
+      })
+        .then((it) => {
+          setDocument({ ...document, files: it.data.files });
+        })
+        .catch(() => {
+          // TODO: i18n
+          toast.error('Unable to delete file');
+        });
+    },
+    [document]
+  );
+
   const removeCheckList = useCallback(
     (itemId: string) => {
       if (!document) return;
 
-      fetchEvent<DeleteCheckListBody, Document>(Events.deleteDocumentCheckList, {
+      fetchEvent<DeleteCheckListBody, Document>(Events.deleteCheckList, {
         itemId,
         documentId: document.id,
       })
@@ -317,13 +350,13 @@ const DocumentPage = () => {
                 <Accordion showDivider={false}>
                   <AccordionItem title={<SectionTitle>{t('common:files')}</SectionTitle>}>
                     <div className="row flex-wrap gap-2">
-                      <Card>
+                      <Card classNames={{ base: 'shadow-md' }}>
                         <Button className="row-center" variant="light" onClick={browseFiles}>
                           <Icon icon="i-mdi-add" />
                           <p>{t('common:addFile')}</p>
                         </Button>
                       </Card>
-                      <DocumentFiles items={document.files} />
+                      <DocumentFiles items={document.files} remove={removeFile} />
                     </div>
                   </AccordionItem>
                   <AccordionItem title={<SectionTitle>{t('common:checklist')}</SectionTitle>}>

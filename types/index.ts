@@ -6,9 +6,12 @@ export enum Events {
   deleteDocument = 'delete:document',
   updateDocument = 'patch:document',
 
-  addDocumentCheckList = 'post:document:checklist',
-  updateDocumentCheckList = 'patch:document:checklist',
-  deleteDocumentCheckList = 'delete:document:checklist',
+  addCheckList = 'post:document:checklist',
+  updateCheckList = 'patch:document:checklist',
+  deleteCheckList = 'delete:document:checklist',
+
+  addFile = 'post:file',
+  deleteFile = 'delete:file',
 
   duplicateDocument = 'post:duplicate-document',
   getPreference = 'get:preference',
@@ -88,4 +91,14 @@ export type UpdateCheckListBody = {
 export type DeleteCheckListBody = {
   documentId: string;
   itemId: string;
+};
+
+export type AddFileBody = {
+  documentId: string;
+  path: string;
+};
+
+export type DeleteFileBody = {
+  documentId: string;
+  path: string;
 };

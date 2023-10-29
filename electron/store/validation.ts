@@ -49,4 +49,12 @@ export const validation = {
     documentId: yup.string().required(),
     itemId: yup.string().required(),
   }),
+  addFile: yup.object({
+    documentId: yup.string().required(),
+    path: yup.string().required(),
+  }),
+  deleteFile: yup.object({
+    documentId: yup.string().required(),
+    path: yup.string().required(),
+  }),
 };
