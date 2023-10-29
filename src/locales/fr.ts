@@ -28,8 +28,8 @@ const fr: TranslationSchema = {
       descriptionInput: 'Brève description du document',
       failedToGet: "Nous n'avons pas pu charger ce document ou il a peut-être été supprimé.",
     },
-    checkListItemPlaceholder: '',
-    checkListNewItemPlaceholder: '',
+    checkListItemPlaceholder: "Description de l'element",
+    checkListNewItemPlaceholder: 'Description du nouveau element',
   },
   common: {
     docuniser: 'Docuniser',

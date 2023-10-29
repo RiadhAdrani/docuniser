@@ -344,7 +344,15 @@ const DocumentPage = () => {
               </div>
               <div>
                 <Accordion showDivider={false}>
-                  <AccordionItem title={<SectionTitle>{t('common:files')}</SectionTitle>}>
+                  <AccordionItem
+                    title={
+                      <SectionTitle>
+                        <div className="row-center justify-start gap-2">
+                          <Icon icon="i-mdi-file-outline" /> {t('common:files')}
+                        </div>
+                      </SectionTitle>
+                    }
+                  >
                     <div className="row flex-wrap gap-2">
                       <Card classNames={{ base: 'shadow-md' }}>
                         <Button className="row-center" variant="light" onClick={browseFiles}>
@@ -355,7 +363,15 @@ const DocumentPage = () => {
                       <DocumentFiles items={document.files} remove={removeFile} />
                     </div>
                   </AccordionItem>
-                  <AccordionItem title={<SectionTitle>{t('common:checklist')}</SectionTitle>}>
+                  <AccordionItem
+                    title={
+                      <SectionTitle>
+                        <div className="row-center justify-start gap-2">
+                          <Icon icon="i-mdi-format-list-bulleted" /> {t('common:checklist')}
+                        </div>
+                      </SectionTitle>
+                    }
+                  >
                     <DocumentCheckList
                       document={document}
                       create={createCheckList}
@@ -363,7 +379,15 @@ const DocumentPage = () => {
                       remove={removeCheckList}
                     />
                   </AccordionItem>
-                  <AccordionItem title={<SectionTitle>{t('common:documents')}</SectionTitle>}>
+                  <AccordionItem
+                    title={
+                      <SectionTitle>
+                        <div className="row-center justify-start gap-2">
+                          <Icon icon="i-mdi-file-tree" /> {t('common:documents')}
+                        </div>
+                      </SectionTitle>
+                    }
+                  >
                     <DocumentList
                       initial={children}
                       onCreated={(body) => createChild(body)}
