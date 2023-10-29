@@ -120,9 +120,6 @@ export const createId = (): string => {
 };
 
 const start = async () => {
-  const fileType = await import('file-type');
-  const { fileTypeFromFile } = fileType;
-
   on<CreateDocumentBody, Document>(Events.createDocument, (body) => {
     const id = createId();
 

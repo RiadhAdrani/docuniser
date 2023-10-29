@@ -31,9 +31,7 @@ const DocumentFiles = (props: DocumentFilesProps) => {
     });
   }, [props.items]);
 
-  const open = (item: FileData) => {
-    toast.message(t('common:notImplemented'));
-  };
+  const open = (item: FileData) => fetchEvent<string>(Events.openFile, item.path);
 
   return (
     <>
