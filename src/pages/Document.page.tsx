@@ -154,8 +154,7 @@ const DocumentPage = () => {
           setDocument({ ...document, checklist: it.data.checklist });
         })
         .catch(() => {
-          // TODO: i18n
-          toast.error('Unable to create item');
+          toast.error(t('toast:document.checkList.add.error'));
         });
     },
     [document]
@@ -173,8 +172,7 @@ const DocumentPage = () => {
           setDocument({ ...document, checklist: it.data.checklist });
         })
         .catch(() => {
-          // TODO: i18n
-          toast.error('Unable to update item');
+          toast.error(t('toast:document.checkList.update.error'));
         });
     },
     [document]
@@ -192,8 +190,7 @@ const DocumentPage = () => {
           setDocument({ ...document, files: it.data.files });
         })
         .catch(() => {
-          // TODO: i18n
-          toast.error('Unable to add file');
+          toast.error(t('toast:document.file.add.error'));
         });
     },
     [document]
@@ -211,8 +208,7 @@ const DocumentPage = () => {
           setDocument({ ...document, files: it.data.files });
         })
         .catch(() => {
-          // TODO: i18n
-          toast.error('Unable to delete file');
+          toast.error(t('toast:document.file.delete.error'));
         });
     },
     [document]

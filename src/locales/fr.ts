@@ -28,6 +28,8 @@ const fr: TranslationSchema = {
       descriptionInput: 'Brève description du document',
       failedToGet: "Nous n'avons pas pu charger ce document ou il a peut-être été supprimé.",
     },
+    checkListItemPlaceholder: '',
+    checkListNewItemPlaceholder: '',
   },
   common: {
     docuniser: 'Docuniser',
@@ -46,6 +48,11 @@ const fr: TranslationSchema = {
     oops: 'Oops',
     loading: 'Chargement...',
     checklist: 'Liste',
+    addFile: 'Ajouter un fichier',
+    documents: 'Documents',
+    files: 'Fichiers',
+    notImplemented: 'pas encore mis en œuvre',
+    open: 'Ouvrir',
   },
   theme: {
     light: 'Lumière',
@@ -93,6 +100,15 @@ const fr: TranslationSchema = {
       duplicate: {
         success: 'Document dupliqué avec succès',
         error: 'Échec de la duplication du document',
+      },
+      checkList: {
+        add: { error: "Impossible d'ajouter l'élément." },
+        delete: { error: "Impossible de supprimer l'élément." },
+        update: { error: "Impossible de mettre à jour l'élément." },
+      },
+      file: {
+        add: { error: "Impossible d'ajouter le fichier." },
+        delete: { error: 'Impossible de supprimer le fichier.' },
       },
     },
     preference: {

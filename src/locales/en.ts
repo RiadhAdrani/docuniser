@@ -26,11 +26,14 @@ export default {
       descriptionInput: 'Document short description',
       failedToGet: 'We were unable to load this document, or it may have been deleted.',
     },
+    checkListItemPlaceholder: 'Item description',
+    checkListNewItemPlaceholder: 'New item description',
   },
   common: {
     docuniser: 'Docuniser',
     delete: 'Delete',
     duplicate: 'Duplicate',
+    open: 'Open',
     close: 'Close',
     create: 'Create',
     cancel: 'Cancel',
@@ -47,6 +50,7 @@ export default {
     documents: 'Documents',
     addFile: 'Add file',
     files: 'Files',
+    notImplemented: 'Not implemented yet...',
   },
   theme: {
     light: 'Light',
@@ -94,6 +98,25 @@ export default {
       duplicate: {
         success: 'Document duplicated successfully',
         error: 'Failed to ducplicate document',
+      },
+      file: {
+        add: {
+          error: 'Unable to add file.',
+        },
+        delete: {
+          error: 'Unable to delete file.',
+        },
+      },
+      checkList: {
+        update: {
+          error: 'Unable to update item.',
+        },
+        add: {
+          error: 'Unable to add item.',
+        },
+        delete: {
+          error: 'Unable to delete item.',
+        },
       },
     },
     preference: {

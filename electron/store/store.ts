@@ -391,8 +391,6 @@ const start = async () => {
     const found = documents[documentId].files.includes(path);
 
     if (found) {
-      console.log(documents[documentId].files);
-
       throw 'File already exists';
     }
 

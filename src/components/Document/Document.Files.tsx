@@ -13,6 +13,7 @@ import {
 import { fetchEvent } from '@/helpers/utils';
 import Icon from '../Icon/Icon';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export type DocumentFilesProps = {
   items: Array<string>;
@@ -22,6 +23,8 @@ export type DocumentFilesProps = {
 const DocumentFiles = (props: DocumentFilesProps) => {
   const [data, setData] = useState<Array<FileData>>([]);
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     fetchEvent<Array<string>, Array<FileData>>(Events.fetchFilesData, props.items).then((res) => {
       setData(res.data);
@@ -29,8 +32,7 @@ const DocumentFiles = (props: DocumentFilesProps) => {
   }, [props.items]);
 
   const open = (item: FileData) => {
-    toast.message('Open file : Not implemented yet');
-    // fetchEvent<string>(Events.openFile, item.path);
+    toast.message(t('common:notImplemented'));
   };
 
   return (
@@ -50,8 +52,10 @@ const DocumentFiles = (props: DocumentFilesProps) => {
               </Button>
             </DropdownTrigger>
             <DropdownMenu>
-              <DropdownItem onClick={() => open(it)}>Open</DropdownItem>
-              <DropdownItem onClick={() => props.remove(it.path)}>Remove</DropdownItem>
+              <DropdownItem onClick={() => open(it)}>{t('common:open')}</DropdownItem>
+              <DropdownItem onClick={() => props.remove(it.path)}>
+                {t('common:delete')}
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </Card>

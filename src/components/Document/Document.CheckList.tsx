@@ -51,7 +51,7 @@ const DocumentCheckList = (props: DocumentCheckListProps) => {
                 create();
               }
             }}
-            placeholder="New item description"
+            placeholder={t('document:checkListNewItemPlaceholder')}
             onInput={(e) => setText(e.currentTarget.value)}
             variant="bordered"
           />
@@ -108,7 +108,7 @@ const CheckListItem = (props: CheckListItemProps) => {
           value={item.text}
           variant="underlined"
           onInput={(e) => setItem({ ...item, text: e.currentTarget.value })}
-          placeholder="Item description"
+          placeholder={t('document:checkListItemPlaceholder')}
           className={isDone ? 'opacity-15' : ''}
           classNames={{
             inputWrapper: 'border-0',
