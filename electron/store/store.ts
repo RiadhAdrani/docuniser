@@ -15,7 +15,7 @@ import {
 } from '../../types/index';
 //@ts-ignore
 import { random } from '@riadh-adrani/math-utils';
-import { hasProperty, isArray, omit } from '@riadh-adrani/obj-utils';
+
 import { log, on, createBase } from './utils';
 import { validation } from './validation';
 
@@ -43,7 +43,9 @@ const store = new ElectronStore<Store>({
   },
 });
 
-const checkAndMigrate = () => {
+const checkAndMigrate = async () => {
+  const { hasProperty, isArray } = await import('@riadh-adrani/obj-utils');
+
   // ? documents
   // add createdAt and updatedAt
 
@@ -120,6 +122,8 @@ export const createId = (): string => {
 };
 
 const start = async () => {
+  const { omit } = await import('@riadh-adrani/obj-utils');
+
   on<CreateDocumentBody, Document>(Events.createDocument, (body) => {
     const id = createId();
 

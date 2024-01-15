@@ -47,7 +47,7 @@ const TopBar = () => {
       {
         onClick: () => setPreference({ theme: preference.theme === 'dark' ? 'light' : 'dark' }),
         tooltip: 'common:theme',
-        icon: preference.theme === 'light' ? 'i-mdi-weather-sunny' : 'i-mdi-weather-night',
+        icon: preference.theme === 'light' ? 'i-mdi-white-balance-sunny' : 'i-mdi-weather-night',
       },
       {
         onClick: () => setPreference({ lang: preference.lang === 'en' ? 'fr' : 'en' }),
